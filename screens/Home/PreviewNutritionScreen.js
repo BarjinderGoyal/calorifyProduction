@@ -106,10 +106,10 @@ const PreviewNutritionScreen = ({ route }) => {
   const bottomSheetRef = useRef(null);
   const snapPoints = useMemo(() => ["50%", "80%"], []);
 
-  console.log(
-    "&&&&&&&&&&&&&&&&&&&&&&&&&***************************************************************************************************************",
-    mealInfo
-  );
+  // console.log(
+  //   "&&&&&&&&&&&&&&&&&&&&&&&&&***************************************************************************************************************",
+  //   mealInfo
+  // );
 
   useEffect(() => {
     const unsubscribe = navigation.addListener("focus", () => {
@@ -207,7 +207,7 @@ const PreviewNutritionScreen = ({ route }) => {
     );
   };
 
-  const handleLog = useCallback(async () => {
+  const handleLog = async () => {
     setLoading(true);
     if (count !== 1) {
       const updatedQunatity = updateMealQuantity(count);
@@ -218,7 +218,7 @@ const PreviewNutritionScreen = ({ route }) => {
 
     setLoading(false);
     navigation.navigate("homeScreen");
-  });
+  };
 
   const checkIsInteger = (number) => {
     return Number.isInteger(number) ? number : number.toFixed(2);
@@ -331,45 +331,25 @@ const PreviewNutritionScreen = ({ route }) => {
                   <Counter />
                 </View>
                 <View style={styles.calorieContainer}>
-                  <Text
-                    style={styles.calorieHeading}
-                    // ellipsizeMode="tail"
-                    // numberOfLines={1}
-                  >
+                  <Text style={styles.calorieHeading}>
                     Calories: {mealInfo?.calories || 0} Kcal
                   </Text>
                 </View>
                 <View style={styles.nutrientDetailContainer}>
-                  <Text
-                    style={styles.nutrientDetail}
-                    // ellipsizeMode="tail"
-                    // numberOfLines={1}
-                  >
+                  <Text style={styles.nutrientDetail}>
                     <Text style={[styles.nutrientDetail, { color: "#d96e6b" }]}>
                       P{" "}
                     </Text>
                     {Number(mealInfo?.protein)?.toFixed(2) || 0}g
                   </Text>
-                  <Text
-                    style={styles.nutrientDetail}
-                    // ellipsizeMode="tail"
-                    // numberOfLines={1}
-                  >
+                  <Text style={styles.nutrientDetail}>
                     <Text style={[styles.nutrientDetail, { color: "#e09c63" }]}>
                       F{" "}
                     </Text>
-                    {Number(mealInfo?.fat)?.toFixed() || 0}g
+                    {Number(mealInfo?.fat)?.toFixed(2) || 0}g
                   </Text>
-                  <Text
-                    style={styles.nutrientDetail}
-                    // ellipsizeMode="tail"
-                    // numberOfLines={1}
-                  >
-                    <Text
-                      style={[styles.nutrientDetail, { color: "#8aa9ce" }]}
-                      // ellipsizeMode="tail"
-                      // numberOfLines={1}
-                    >
+                  <Text style={styles.nutrientDetail}>
+                    <Text style={[styles.nutrientDetail, { color: "#8aa9ce" }]}>
                       C{" "}
                     </Text>
                     {Number(mealInfo?.carbs)?.toFixed(2) || 0}g

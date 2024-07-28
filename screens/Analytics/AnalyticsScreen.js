@@ -53,6 +53,11 @@ const AnalyticsScreen = () => {
 
   const chartOptions = ["Week", "Month", "6 Months", "Year"];
 
+  console.log(
+    "anaannananaannanananannananaanananananananannanananannanananannannaananananaanaannanananananaa",
+    weeklyNutritionData
+  );
+
   useEffect(() => {
     if (!userLoggedWeight.length && userUid) {
       fetchUserLoggedWeight(userUid);

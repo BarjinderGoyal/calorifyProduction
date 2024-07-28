@@ -61,10 +61,15 @@ const SavedMealPreviewScreen = ({ route }) => {
 
   const deleteCurrentMeal = useCallback(async () => {
     setLoading(true);
-    deleteMeal(userUid, meal, foodDetail?._id, date);
+    await deleteMeal(userUid, meal, foodDetail?._id, date);
     setLoading(false);
     navigation.goBack();
   }, [foodDetail, userUid, date]);
+
+  console.log(
+    "FOOD DETAILDETAILDETAILDETAILDETAILDETAILDETAILDETAIL",
+    foodDetail
+  );
 
   useEffect(() => {
     const unsubscribe = navigation.addListener("focus", () => {
@@ -181,8 +186,7 @@ const SavedMealPreviewScreen = ({ route }) => {
                   </Text>
                 </View>
                 <View style={styles.nutrientDetailContainer}>
-                  {/* <Text>
-                    style={styles.nutrientDetail}
+                  <Text style={styles.nutrientDetail}>
                     <Text style={[styles.nutrientDetail, { color: "#d96e6b" }]}>
                       P{" "}
                     </Text>
@@ -199,7 +203,7 @@ const SavedMealPreviewScreen = ({ route }) => {
                       C{" "}
                     </Text>
                     {Number(foodDetail?.carbs)?.toFixed(2) || 0}g
-                  </Text> */}
+                  </Text>
                 </View>
               </View>
               {foodDetail?.ingredients?.length >= 1 && (
@@ -289,7 +293,6 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
     color: "black",
-    // maxWidth: 80,
   },
   bottomSheetContainer: {
     flex: 1,

@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useCallback, useContext, useState } from "react";
 import { fetchMeal } from "../functions/FetchMeal";
 import { logFood } from "../functions/logFood";
 import { deleteFoodFromMeal } from "../functions/DeleteMeal";
@@ -72,6 +72,10 @@ const MealsContext = ({ children }) => {
       if (data !== -1) {
         mealData = data;
       }
+      console.log(
+        "SELECTED MEAL IS SELECTEDMEAL IS SELECTEDMEAL IS SELECTEDMEAL IS SE;EVE",
+        mealData
+      );
       await logFood(uid, selectedMeal, mealData, foodImage).then(
         async (response) => {
           if (response) {
@@ -82,10 +86,13 @@ const MealsContext = ({ children }) => {
               updatedCalculatedNutritions.calorie - calorieBurned > 0
                 ? updatedCalculatedNutritions.calorie - calorieBurned
                 : 0;
-            updateTodayNutrition({
-              updatedCalculatedNutritions,
-              calorie: updatedCalorie,
-            });
+            updateTodayNutrition(
+              {
+                ...updatedCalculatedNutritions,
+                calorie: updatedCalorie,
+              },
+              weeklyNutritionData
+            );
             setSelectedMeal(null);
             setFoodImage("");
           }
@@ -107,15 +114,19 @@ const MealsContext = ({ children }) => {
           if (!response) return;
           const updatedCalculatedNutritions = calculateNutrition(response);
           setCalculatedNutrition(updatedCalculatedNutritions);
+          const formattedData = await calculateWeeklyCalorie(uid);
           const calorieBurnedValue = await fetchExercises(uid);
           const updatedCalorie =
             updatedCalculatedNutritions.calorie - calorieBurnedValue > 0
               ? updatedCalculatedNutritions.calorie - calorieBurnedValue
               : 0;
-          updateTodayNutrition({
-            updatedCalculatedNutritions,
-            calorie: updatedCalorie,
-          });
+          updateTodayNutrition(
+            {
+              ...updatedCalculatedNutritions,
+              calorie: updatedCalorie,
+            },
+            formattedData
+          );
         });
       } else {
         setSpecificDateMeal([]);
@@ -178,6 +189,10 @@ const MealsContext = ({ children }) => {
     totalCount.protein = formatNumber(totalCount.protein);
     totalCount.fat = formatNumber(totalCount.fat);
     totalCount.carbs = formatNumber(totalCount.carbs);
+    console.log(
+      "VALUESINSIDECALCULATENUTRIOTNVALUESINSIDECALCULATENUTRIOTNVALUESINSIDECALCULATENUTRIOTNVALUESINSIDECALCULATENUTRIOTNVALUESINSIDECALCULATENUTRIOTNVALUESINSIDECALCULATENUTRIOTNVALUESINSIDECALCULATENUTRIOTN",
+      totalCount
+    );
     return totalCount;
   };
 
@@ -186,14 +201,13 @@ const MealsContext = ({ children }) => {
       const response = await deleteFoodFromMeal(uid, meal, foodItemId, date);
       const todayDate = format(new Date(), "yyyy-MM-dd");
       if (response.status === 200) {
-        if (todayDate === date) {
+        const formattedDate = format(new Date(date), "yyyy-MM-dd");
+        if (todayDate === formattedDate) {
           const { [meal]: currentMeal, ...restMeals } = meals;
-
           if (currentMeal) {
             const updatedFoodItems = currentMeal.food_items.filter(
               (item) => item._id !== foodItemId
             );
-
             const updatedMeals = {
               ...restMeals,
               [meal]: {
@@ -201,7 +215,6 @@ const MealsContext = ({ children }) => {
                 food_items: updatedFoodItems,
               },
             };
-
             const updatedSavedFood = savedFood.filter(
               (item) => item._id !== foodItemId
             );
@@ -210,7 +223,17 @@ const MealsContext = ({ children }) => {
             setSavedFood(updatedSavedFood);
             const calcualtedValue = calculateNutrition(updatedMeals);
             setCalculatedNutrition(calcualtedValue);
-            updateTodayNutrition(calcualtedValue);
+            const updatedCalorie =
+              calcualtedValue.calorie - calorieBurned > 0
+                ? calcualtedValue.calorie - calorieBurned
+                : 0;
+            updateTodayNutrition(
+              {
+                ...calcualtedValue,
+                calorie: updatedCalorie,
+              },
+              weeklyNutritionData
+            );
           }
 
           Toast.show("Food is deleted successfully", Toast.LONG);
@@ -245,25 +268,6 @@ const MealsContext = ({ children }) => {
     }
   };
 
-  // const calculateWeeklyCalorie = async (uid) => {
-  //   try {
-  //     const response = await getWeeklyNutritionValues(uid);
-  //     if (response) {
-  //       console.log(
-  //         "wekly response of the data is RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR",
-  //         response
-  //       );
-  //       setWeeklyNutritionData(response);
-  //     } else {
-  //       setWeeklyNutritionData([]);
-  //     }
-  //   } catch (e) {
-  //     Toast.show("Something went wrong", Toast.LONG);
-
-  //     console.log("error while fetching weakly nutirtions", e);
-  //   }
-  // };
-
   const calculateWeeklyCalorie = async (uid) => {
     try {
       const response = await getWeeklyNutritionValues(uid);
@@ -280,16 +284,11 @@ const MealsContext = ({ children }) => {
         };
         console.log(
           "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFDFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF",
-          formattedData
+          formattedData,
+          Date.now()
         );
         setWeeklyNutritionData(formattedData);
-      } else {
-        setWeeklyNutritionData({
-          calories: [],
-          protein: [],
-          fats: [],
-          carbs: [],
-        });
+        return formattedData;
       }
     } catch (e) {
       Toast.show("Something went wrong", Toast.LONG);
@@ -297,43 +296,39 @@ const MealsContext = ({ children }) => {
     }
   };
 
-  // const updateTodayNutrition = (calculatedNutrition) => {
-  //   const today = new Date();
-  //   const dayFullName = format(today, "EEE");
-  //   const updatedWeeklyData = weeklyNutritionData.map((day) => {
-  //     if (day.label === dayFullName) {
-  //       return {
-  //         ...day,
-  //         calories: Number(calculatedNutrition.calorie),
-  //         protein: Number(calculatedNutrition.protein),
-  //         fats: Number(calculatedNutrition.fat),
-  //         carbs: Number(calculatedNutrition.carbs),
-  //       };
-  //     }
-  //     return day;
-  //   });
-  //   setWeeklyNutritionData(updatedWeeklyData);
-  // };
-  const updateTodayNutrition = (calculatedNutrition) => {
-    const today = new Date();
-    const dayFullName = format(today, "EEE");
+  const updateTodayNutrition = useCallback(
+    (calculatedNutrition, weeklyNutritionData) => {
+      console.log(
+        "entryentryentryentryentryentryentryentryentryentryentryentry",
+        calculatedNutrition,
+        weeklyNutritionData
+      );
+      const today = new Date();
+      const dayFullName = format(today, "EEE");
 
-    const updateDayData = (data, key) => {
-      return data.map((day) => {
-        if (day.label === dayFullName) {
-          return { ...day, value: Number(calculatedNutrition[key]) };
-        }
-        return day;
+      const updateDayData = (data, key) => {
+        console.log(
+          "insideinsideinsideinsideinsideisinidisisisiddidididdidndinidsniie",
+          weeklyNutritionData,
+          Date.now()
+        );
+        return data.map((day) => {
+          if (day.label === dayFullName) {
+            return { ...day, value: Number(calculatedNutrition[key]) };
+          }
+          return day;
+        });
+      };
+
+      setWeeklyNutritionData({
+        calories: updateDayData(weeklyNutritionData.calories, "calorie"),
+        protein: updateDayData(weeklyNutritionData.protein, "protein"),
+        fats: updateDayData(weeklyNutritionData.fats, "fat"),
+        carbs: updateDayData(weeklyNutritionData.carbs, "carbs"),
       });
-    };
-
-    setWeeklyNutritionData({
-      calories: updateDayData(weeklyNutritionData.calories, "calories"),
-      protein: updateDayData(weeklyNutritionData.protein, "protein"),
-      fats: updateDayData(weeklyNutritionData.fats, "fat"),
-      carbs: updateDayData(weeklyNutritionData.carbs, "carbs"),
-    });
-  };
+    },
+    [calculatedNutrition, weeklyNutritionData]
+  );
 
   const updateSelectedMeal = (meal) => {
     setSelectedMeal(meal);
@@ -522,10 +517,13 @@ const MealsContext = ({ children }) => {
             ? calculatedNutrition.calorie - totalBurnedCalorie
             : 0;
 
-        updateTodayNutrition({
-          ...calculatedNutrition,
-          calorie: updatedCalorie,
-        });
+        updateTodayNutrition(
+          {
+            ...calculatedNutrition,
+            calorie: updatedCalorie,
+          },
+          weeklyNutritionData
+        );
 
         setExercise((prev) => {
           return {
@@ -562,7 +560,6 @@ const MealsContext = ({ children }) => {
         );
         if (day === -1) {
           setCalorieBurned(totalBurnedCalorie);
-
           return totalBurnedCalorie;
         } else {
           setSpecificDateCalorieBurned(totalBurnedCalorie);

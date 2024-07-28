@@ -30,7 +30,7 @@ export const imageToNutritions = (model, imageUri) => {
               "ingredients": [
                 {
                   "name": "<item name>",
-                  "quantity": ["<item quantity value>", "<unit>", "<optional count for countable items>"],
+                  "quantity": ["<item quantity value>", "<unit grams/ml>", "<optional count for countable items>"],
                   "calories": "<item calories>",
                   "protein": "<item protein>",
                   "carbs": "<item carbs>",
@@ -136,7 +136,7 @@ export const textToNutritions = (model, foodDetails) => {
             "ingredients": [
               {
                 "name": "<item name>",
-                "quantity": ["<item quantity value>", "<unit>", "<optional count for countable items>"],
+                "quantity": ["<item quantity value>", "<unit grams/ml>", "<optional count for countable items>"],
                 "calories": "<item calories>",
                 "protein": "<item protein>",
                 "carbs": "<item carbs>",
@@ -282,7 +282,7 @@ export const updateIngredient = (
               },
               {
                 "name": "Omelet (2)",
-                "quantity": ["2", "omelets"],
+                "quantity": ["180", "grams","2"],
                 "calories": "292",
                 "protein": "24",
                 "carbs": "2",
@@ -290,7 +290,7 @@ export const updateIngredient = (
               },
               {
                 "name": "Whole Wheat Bread with Butter",
-                "quantity": ["2", "slices"],
+                "quantity": ["160", "grams","2"],
                 "calories": "208",
                 "protein": "6",
                 "carbs": "30",

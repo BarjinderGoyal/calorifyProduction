@@ -1,5 +1,5 @@
 import { StyleSheet } from "react-native";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 
 import { Ionicons, AntDesign, Entypo } from "react-native-vector-icons";
@@ -12,12 +12,14 @@ const Tab = createBottomTabNavigator();
 
 const ScreenNavigation = () => {
   const { bottomSheetIsOpen } = bottomSheetUseContext();
+  const [isTabBarVisible, setIsTabBarVisible] = useState(true);
 
   useEffect(() => {
     console.log(
-      "value of bottomSheetIsOpen in bottom tab navigatot container",
+      "value of bottomSheetIsOpen in bottom tab navigator container",
       bottomSheetIsOpen
     );
+    setIsTabBarVisible(!bottomSheetIsOpen);
   }, [bottomSheetIsOpen]);
 
   return (
@@ -27,7 +29,7 @@ const ScreenNavigation = () => {
         headerShown: false,
         tabBarActiveTintColor: "#ee7214", //#C0D6E8
         tabBarInactiveTintColor: "lightgrey",
-        tabBarStyle: { display: bottomSheetIsOpen ? "none" : "flex" },
+        tabBarStyle: { display: isTabBarVisible ? "flex" : "none" },
       }}
     >
       <Tab.Screen

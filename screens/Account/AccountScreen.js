@@ -9,10 +9,11 @@ import {
 } from "react-native";
 import React, { useCallback, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Octicons, Ionicons } from "react-native-vector-icons";
+
 import { useNavigation } from "@react-navigation/native";
 import { userAuthUseContext } from "../../Context/UserAuthContext";
 import Toast from "react-native-simple-toast";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const profileImage = require("../../assets/profile.jpeg");
 
@@ -32,6 +33,7 @@ const AccountScreen = () => {
   const handleLogout = async () => {
     try {
       await AsyncStorage.removeItem("uid");
+      navigation.navigate("signupScreen");
     } catch (error) {
       Toast.show("Something went wrong", Toast.LONG);
       console.error("Error removing UID from AsyncStorage", error);

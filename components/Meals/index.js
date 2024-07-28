@@ -9,7 +9,6 @@ import { mealDropDownUseContext } from "../../Context/MealDropDownContext";
 import { useNavigation } from "@react-navigation/native";
 import { useMealsContext } from "../../Context/MealsContext";
 import Superwall from "@superwall/react-native-superwall";
-import { image } from "d3";
 import { bottomSheetUseContext } from "../../Context/BottomSheetContext";
 
 const placeholderImage = require("../../assets/placeholder.png");
@@ -54,12 +53,12 @@ const RenderFoodItem = React.memo(({ item, date, meal, index }) => {
       }
       style={styles.foodItem}
     >
-      {/* {item?.image === "" || item?.image === null ? (
+      {item?.foodImage === "" || item?.foodImage === null ? (
         <Image source={placeholderImage} style={styles.foodImage} />
       ) : (
-        <Image source={{ uri: item?.image }} style={styles.foodImage} />
-      )} */}
-      <Image source={placeholderImage} style={styles.foodImage} />
+        <Image source={{ uri: item?.foodImage }} style={styles.foodImage} />
+      )}
+      {/* <Image source={placeholderImage} style={styles.foodImage} /> */}
       <View style={styles.foodItemDetail}>
         <Text
           style={styles.foodItemName}
@@ -71,12 +70,16 @@ const RenderFoodItem = React.memo(({ item, date, meal, index }) => {
         <Text style={styles.foodItemCal}>{item?.calories || 0} Kcal </Text>
         <Text style={styles.foodItemMicroNutrient}>
           <Text style={{ color: "#d96e6b" }}>
-            P {item?.protein || 0}g <Text style={{ color: "black" }}>.</Text>{" "}
+            P {Number(item?.protein)?.toFixed(2) || 0}g{" "}
+            <Text style={{ color: "black" }}>.</Text>{" "}
           </Text>
           <Text style={{ color: "#e09c63" }}>
-            F {item?.fat || 0}g <Text style={{ color: "black" }}>.</Text>{" "}
+            F {Number(item?.fat)?.toFixed(2) || 0}g{" "}
+            <Text style={{ color: "black" }}>.</Text>{" "}
           </Text>
-          <Text style={{ color: "#8aa9ce" }}>C {item?.carbs || 0}g</Text>
+          <Text style={{ color: "#8aa9ce" }}>
+            C {Number(item?.carbs).toFixed(2) || 0}g
+          </Text>
         </Text>
       </View>
     </Pressable>

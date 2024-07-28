@@ -21,8 +21,8 @@ const Screens = () => {
     if (userUid) {
       try {
         await Promise.all([
+          // calculateWeeklyCalorie(userUid),
           fetchMeals(userUid),
-          calculateWeeklyCalorie(userUid),
           fetchUserLoggedWeight(userUid),
           calculateDailyMacroIntake(),
           fetchExercises(userUid),
