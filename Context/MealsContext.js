@@ -108,11 +108,19 @@ const MealsContext = ({ children }) => {
   const fetchMeals = async (uid, day = -1, month = -1, year = -1) => {
     try {
       if (day === -1) {
+        console.log("fetchfetchfetchfetchfetchfetchfetcfh");
         const date = format(new Date(), "yyyy-MM-dd");
         await fetchMeal(uid, date).then(async (response) => {
           if (response) setMeals(response);
-          if (!response) return;
-          const updatedCalculatedNutritions = calculateNutrition(response);
+          // if (!response) return;
+          console.log(
+            "fetchfetchfetchfetchfetchfetchfetcfh-0-0-0-00000000-0-0-0-0-0",
+            response,
+            "respnse"
+          );
+          const updatedCalculatedNutritions = calculateNutrition(
+            response || {}
+          );
           setCalculatedNutrition(updatedCalculatedNutritions);
           const formattedData = await calculateWeeklyCalorie(uid);
           const calorieBurnedValue = await fetchExercises(uid);

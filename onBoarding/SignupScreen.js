@@ -40,22 +40,6 @@ const SignupScreen = () => {
   const { handleUserDetail, setUid } = userAuthUseContext();
   const [loading, setLoading] = useState(false);
 
-  // const checkUserLocally = async () => {
-  //   try {
-  //     console.log("CHECK USER LOCALLY IS CALLED");
-  //     const uidJson = await AsyncStorage.getItem("uid");
-  //     const uidData = uidJson ? JSON.parse(uidJson) : null;
-  //     if (uidData) {
-  //       const response = await getUserFromDatabase(uidData);
-  //       setUid(uidData);
-  //       handleUserDetail(response?.data?.data);
-  //       navigation.navigate("mainScreen");
-  //     }
-  //   } catch (e) {
-  //     console.error("Error reading UID from AsyncStorage:", e);
-  //   }
-  // };
-
   useEffect(() => {
     const backAction = () => {
       Alert.alert("Hold on!", "Are you sure you want to exit the app?", [
@@ -89,7 +73,6 @@ const SignupScreen = () => {
 
   useEffect(() => {
     setLoading(true);
-    checkUserLocally();
     const unsub = onAuthStateChanged(auth, async (user) => {
       try {
         if (user) {
@@ -111,10 +94,6 @@ const SignupScreen = () => {
           }
         } else {
           setLoading(false);
-          // if (Platform.OS === "android") {
-          //   ToastAndroid.show("Something went wrong", ToastAndroid.LONG);
-          // }
-          // console.log("in onauthchnaged else condition is running");
         }
       } catch (e) {
         setLoading(false);
@@ -146,10 +125,6 @@ const SignupScreen = () => {
   return (
     <View style={styles.container}>
       <SafeAreaView style={styles.innerContainer}>
-        {/* <Image
-          source={require("../assets/adaptive-icon.png")}
-          style={styles.appIcon}
-        /> */}
         <TouchableOpacity style={styles.button} onPress={promptAsync}>
           <View style={styles.iconContainer}>
             <GoogleG size={24} />
@@ -166,13 +141,11 @@ export default SignupScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "white",
+    backgroundColor: "#F6F5F2",
   },
   innerContainer: {
     flex: 1,
     paddingHorizontal: 10,
-    // justifyContent: "center",
-    // alignItems: "center",
   },
   button: {
     flexDirection: "row",

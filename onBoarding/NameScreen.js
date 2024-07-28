@@ -161,7 +161,7 @@ export default NameScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f7f8f9",
+    backgroundColor: "#F6F5F2",
   },
   innerContainer: {
     flex: 1,
