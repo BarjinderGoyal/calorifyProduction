@@ -652,9 +652,10 @@ const MealsContext = ({ children }) => {
           if (item._id === foodId) {
             return { ...item, isSaved: true };
           } else {
-            item;
+            return item;
           }
         });
+
         setMeals({
           ...meals,
           [meal]: { ...meals[`${meal}`], food_items: updatedMeal },
@@ -678,7 +679,7 @@ const MealsContext = ({ children }) => {
           if (item._id === foodId) {
             return { ...item, isSaved: false };
           } else {
-            item;
+            return item;
           }
         });
 

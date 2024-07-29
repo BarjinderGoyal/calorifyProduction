@@ -265,7 +265,7 @@ const updateFoodInMeal = asyncHandler(async (req, res, next) => {
 export { updateFoodInMeal };
 
 // export const weeklyNutritionDetail = asyncHandler(async (req, res, next) => {
-//   const { uid, startDate, endDate } = req.query;
+//   const { uid } = req.query;
 
 //   if (!uid) {
 //     return next(new ApiError(400, "Invalid request data"));
@@ -276,11 +276,15 @@ export { updateFoodInMeal };
 //     return next(new ApiError(400, "User not found"));
 //   }
 
-//   const startOfWeekDate = parseISO(startDate);
-//   const endOfTodayDate = parseISO(endDate);
+//   // Get the current date
+//   const currentDate = new Date();
+
+//   // Calculate the start and end dates of the current week (Sunday to Saturday)
+//   const startOfWeekDate = startOfWeek(currentDate, { weekStartsOn: 0 }); // 0 means Sunday
+//   const endOfWeekDate = endOfWeek(currentDate, { weekStartsOn: 0 }); // 0 means Sunday
 
 //   console.log(
-//     `Fetching daily meals and exercises for user ${uid} from ${startOfWeekDate} to ${endOfTodayDate}`
+//     `Fetching daily meals and exercises for user ${uid} from ${startOfWeekDate} to ${endOfWeekDate}`
 //   );
 
 //   try {
@@ -289,7 +293,7 @@ export { updateFoodInMeal };
 //       user: user._id,
 //       date: {
 //         $gte: startOfWeekDate,
-//         $lte: endOfTodayDate,
+//         $lte: endOfWeekDate,
 //       },
 //     })
 //       .populate({
@@ -313,8 +317,8 @@ export { updateFoodInMeal };
 //     const exercises = await Exercise.find({
 //       user: user._id,
 //       date: {
-//         $gte: startDate.split("T")[0], // Convert start date to "YYYY-MM-DD"
-//         $lte: endDate.split("T")[0], // Convert end date to "YYYY-MM-DD"
+//         $gte: startOfWeekDate,
+//         $lte: endOfWeekDate,
 //       },
 //     }).populate("exercise");
 
@@ -324,7 +328,7 @@ export { updateFoodInMeal };
 
 //     const weekDays = eachDayOfInterval({
 //       start: startOfWeekDate,
-//       end: endOfTodayDate,
+//       end: endOfWeekDate,
 //     });
 
 //     const response = weekDays.map((day) => {
@@ -397,103 +401,138 @@ export const weeklyNutritionDetail = asyncHandler(async (req, res, next) => {
     return next(new ApiError(400, "User not found"));
   }
 
-  // Get the current date
   const currentDate = new Date();
-
-  // Calculate the start and end dates of the current week (Sunday to Saturday)
-  const startOfWeekDate = startOfWeek(currentDate, { weekStartsOn: 0 }); // 0 means Sunday
-  const endOfWeekDate = endOfWeek(currentDate, { weekStartsOn: 0 }); // 0 means Sunday
+  const startOfWeekDate = startOfWeek(currentDate, { weekStartsOn: 0 });
+  const endOfWeekDate = endOfWeek(currentDate, { weekStartsOn: 0 });
 
   console.log(
     `Fetching daily meals and exercises for user ${uid} from ${startOfWeekDate} to ${endOfWeekDate}`
   );
 
   try {
-    // Fetching daily meals
-    const dailyMeals = await DailyMeals.find({
-      user: user._id,
-      date: {
-        $gte: startOfWeekDate,
-        $lte: endOfWeekDate,
+    // Aggregation for daily meals
+    const dailyMeals = await DailyMeals.aggregate([
+      {
+        $match: {
+          user: user._id,
+          date: { $gte: startOfWeekDate, $lte: endOfWeekDate },
+        },
       },
-    })
-      .populate({
-        path: "breakfast",
-        populate: { path: "food_items" },
-      })
-      .populate({
-        path: "lunch",
-        populate: { path: "food_items" },
-      })
-      .populate({
-        path: "snack",
-        populate: { path: "food_items" },
-      })
-      .populate({
-        path: "dinner",
-        populate: { path: "food_items" },
-      });
-
-    // Fetching exercises
-    const exercises = await Exercise.find({
-      user: user._id,
-      date: {
-        $gte: startOfWeekDate,
-        $lte: endOfWeekDate,
+      { $unwind: "$breakfast" },
+      { $unwind: "$lunch" },
+      { $unwind: "$snack" },
+      { $unwind: "$dinner" },
+      {
+        $lookup: {
+          from: "fooditems",
+          localField: "breakfast",
+          foreignField: "_id",
+          as: "breakfast_food_items",
+        },
       },
-    }).populate("exercise");
+      {
+        $lookup: {
+          from: "fooditems",
+          localField: "lunch",
+          foreignField: "_id",
+          as: "lunch_food_items",
+        },
+      },
+      {
+        $lookup: {
+          from: "fooditems",
+          localField: "snack",
+          foreignField: "_id",
+          as: "snack_food_items",
+        },
+      },
+      {
+        $lookup: {
+          from: "fooditems",
+          localField: "dinner",
+          foreignField: "_id",
+          as: "dinner_food_items",
+        },
+      },
+      {
+        $group: {
+          _id: "$date",
+          food_items: {
+            $push: {
+              $concatArrays: [
+                "$breakfast_food_items",
+                "$lunch_food_items",
+                "$snack_food_items",
+                "$dinner_food_items",
+              ],
+            },
+          },
+        },
+      },
+      { $unwind: "$food_items" },
+      {
+        $group: {
+          _id: "$_id",
+          total_calories: { $sum: "$food_items.calories" },
+          total_protein: { $sum: "$food_items.protein" },
+          total_fats: { $sum: "$food_items.fat" },
+          total_carbs: { $sum: "$food_items.carbs" },
+        },
+      },
+    ]);
 
-    // Debugging fetched data
-    console.log("Raw daily meals data:", dailyMeals);
-    console.log("Raw exercises data:", exercises);
+    // Aggregation for exercises
+    const exercises = await Exercise.aggregate([
+      {
+        $match: {
+          user: user._id,
+          date: { $gte: startOfWeekDate, $lte: endOfWeekDate },
+        },
+      },
+      {
+        $group: {
+          _id: "$date",
+          total_calories_burned: { $sum: "$caloriesBurned" },
+        },
+      },
+    ]);
 
+    console.log("Aggregated daily meals data:", dailyMeals);
+    console.log("Aggregated exercises data:", exercises);
+
+    // Create an interval of days for the week
     const weekDays = eachDayOfInterval({
       start: startOfWeekDate,
       end: endOfWeekDate,
     });
 
+    // Map through each day to compute nutrition details
     const response = weekDays.map((day) => {
       const dayMeals = dailyMeals.find((dailyMeal) =>
-        isSameDay(new Date(dailyMeal.date), day)
+        isSameDay(new Date(dailyMeal._id), day)
       );
 
       const dayExercises = exercises.find((exercise) =>
-        isSameDay(new Date(exercise.date), day)
+        isSameDay(new Date(exercise._id), day)
       );
 
       console.log(`Day: ${day}`);
       console.log("Day meals:", dayMeals);
       console.log("Day exercises:", dayExercises);
 
-      const meals = [
-        dayMeals?.breakfast,
-        dayMeals?.lunch,
-        dayMeals?.snack,
-        dayMeals?.dinner,
-      ];
-
-      const dayNutrition = meals.reduce(
-        (acc, meal) => {
-          if (meal && meal.food_items) {
-            meal.food_items.forEach((item) => {
-              acc.calories += item.calories;
-              acc.protein += item.protein;
-              acc.fats += item.fat;
-              acc.carbs += item.carbs;
-            });
-          }
-          return acc;
-        },
-        { date: day, calories: 0, protein: 0, fats: 0, carbs: 0 }
-      );
+      const dayNutrition = {
+        date: day,
+        calories: dayMeals ? dayMeals.total_calories : 0,
+        protein: dayMeals ? dayMeals.total_protein : 0,
+        fats: dayMeals ? dayMeals.total_fats : 0,
+        carbs: dayMeals ? dayMeals.total_carbs : 0,
+      };
 
       const totalCaloriesBurned = dayExercises
-        ? dayExercises.exercise.reduce((total, exerciseItem) => {
-            console.log("Exercise item:", exerciseItem);
-            return total + Number(exerciseItem.caloriesBurned);
-          }, 0)
+        ? dayExercises.total_calories_burned
         : 0;
 
+      // Adjust net calories
       dayNutrition.calories = Math.max(
         0,
         dayNutrition.calories - totalCaloriesBurned
