@@ -1,57 +1,153 @@
-import React, { useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { StyleSheet, View, Image, Dimensions } from "react-native";
 import Animated, {
-  useSharedValue,
+  Easing,
   useAnimatedStyle,
+  useSharedValue,
   withRepeat,
+  withSequence,
   withTiming,
 } from "react-native-reanimated";
+import { LinearGradient } from "expo-linear-gradient";
 
 const { width, height } = Dimensions.get("window");
+const AREA_HEIGHT = height * 0.6;
+const AREA_WIDTH = width - 20;
 
-const FoodScannerAnimation = ({ imageUrl }) => {
-  const translateX = useSharedValue(0);
+const defaultOffset = AREA_HEIGHT / 2;
+const duration = 2000;
+
+export default function FoodScannerAnimation({ imageUri }) {
+  const margin = useSharedValue(15);
+  const offset = useSharedValue(0);
+  const opacity = useSharedValue(1);
+
+  const animatedTransformStyles = useAnimatedStyle(() => ({
+    transform: [{ translateY: offset.value }],
+  }));
+  const animatedStyles = useAnimatedStyle(() => ({
+    height: AREA_HEIGHT * 0.95 + margin.value,
+    width: AREA_WIDTH * 0.9 + margin.value,
+  }));
+  const opacityStyles = useAnimatedStyle(() => ({
+    opacity: opacity.value,
+  }));
 
   useEffect(() => {
-    console.log("imageUrl: ", imageUrl); // Log the imageUrl to check its type and value
-    translateX.value = withRepeat(
-      withTiming(width - 20, { duration: 2000 }),
-      -1,
-      true
-    );
-  }, [translateX, width, imageUrl]);
-
-  const animatedStyle = useAnimatedStyle(() => {
-    return {
-      transform: [{ translateX: translateX.value - (width - 20) / 2 }],
-    };
-  });
+    setTimeout(() => {
+      margin.value = withRepeat(
+        withSequence(
+          withTiming(-margin.value, { duration }),
+          withTiming(margin.value, { duration })
+        ),
+        -1
+      );
+      offset.value = withRepeat(
+        withSequence(
+          withTiming(defaultOffset, { duration, easing: Easing.linear }),
+          withTiming(-defaultOffset, { duration, easing: Easing.linear })
+        ),
+        -1,
+        true
+      );
+      opacity.value = withRepeat(
+        withSequence(
+          withTiming(0.5, { duration, easing: Easing.ease }),
+          withTiming(1, { duration, easing: Easing.ease })
+        ),
+        -1,
+        true
+      );
+    }, 2500);
+  }, []);
 
   return (
-    <View style={styles.container}>
-      <Image source={{ uri: imageUrl }} style={styles.image} />
-      <Animated.View style={[styles.scanner, animatedStyle]} />
+    <View style={styles.containerCenter}>
+      <Image
+        resizeMode="cover"
+        source={{
+          uri: imageUri,
+        }}
+        style={styles.image}
+      />
+      {/* <LinearGradient
+        colors={[
+          "rgba(255,255,255,0.1)",
+          "rgba(255,255,255,0.3)",
+          "rgba(255,255,255,0.1)",
+        ]}
+        style={styles.gradientOverlay}
+      /> */}
+      <Animated.View style={[styles.container, animatedStyles, opacityStyles]}>
+        <View style={styles.row}>
+          <View style={[styles.box, styles.rotateY]} />
+          <View style={styles.box} />
+        </View>
+        <View style={styles.row}>
+          <View style={[styles.box, styles.rotate]} />
+          <View style={[styles.box, styles.rotateX]} />
+        </View>
+      </Animated.View>
+      <View style={styles.lineContainer}>
+        <Animated.View
+          style={[styles.line, animatedTransformStyles, opacityStyles]}
+        />
+      </View>
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
+  containerCenter: {
+    ...StyleSheet.absoluteFillObject,
+    alignItems: "center",
+    justifyContent: "center",
     paddingHorizontal: 10,
   },
   image: {
-    width: width - 20,
-    height: height * 0.6,
-    borderRadius: 20,
+    height: AREA_HEIGHT * 0.8,
+    width: AREA_WIDTH * 0.8,
+    position: "absolute",
+    borderRadius: 10,
+  },
+  gradientOverlay: {
+    position: "absolute",
+    height: AREA_HEIGHT * 0.8,
+    width: AREA_WIDTH * 0.8,
+    borderRadius: 10,
+  },
+  container: {
+    justifyContent: "space-between",
+    borderRadius: 10,
     overflow: "hidden",
   },
-  scanner: {
+  rotateX: { transform: [{ rotateX: "180deg" }] },
+  rotateY: { transform: [{ rotateY: "180deg" }] },
+  rotate: { transform: [{ rotate: "180deg" }] },
+  row: { flexDirection: "row", justifyContent: "space-between" },
+  box: {
+    height: 70,
+    width: 40,
+    borderTopColor: "white",
+    borderTopWidth: 3,
+    borderRightColor: "white",
+    borderRightWidth: 3,
+  },
+  lineContainer: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    height: "100%",
     position: "absolute",
-    width: 4,
-    height: height * 0.6,
-    backgroundColor: "rgba(255, 0, 0, 0.5)",
+  },
+  line: {
+    height: 2,
+    width: AREA_WIDTH,
+    borderColor: "red",
+    borderWidth: 1,
+    shadowColor: "red",
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 1,
+    shadowRadius: 10,
   },
 });
-
-export default FoodScannerAnimation;

@@ -9,6 +9,7 @@ import {
   Pressable,
   TouchableOpacity,
 } from "react-native";
+
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import Toast from "react-native-simple-toast";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -16,9 +17,6 @@ import { CameraView, useCameraPermissions } from "expo-camera";
 import { useNavigation } from "@react-navigation/native";
 import { Ionicons } from "react-native-vector-icons";
 import { useMealsContext } from "../../Context/MealsContext";
-import { ActivityIndicator } from "react-native-paper";
-import * as FileSystem from "expo-file-system";
-// import ImageResizer from "@bam.tech/react-native-image-resizer";
 import * as ImageManipulator from "expo-image-manipulator";
 import FoodScannerAnimation from "./FoodScannerAnimation";
 
@@ -79,6 +77,7 @@ const CameraScreen = ({ route }) => {
       await fetchNutritionsFromFoodImage(imageUri);
       navigation.navigate("previewNutrientScreen");
     } catch (e) {
+      Toast.show("Network Error", Toast.LONG);
       console.log("error while getting response from openai", e);
     } finally {
       setIsLoading(false);
@@ -109,21 +108,7 @@ const CameraScreen = ({ route }) => {
 
   if (isLoading) {
     if (imageUrl !== null) {
-      return (
-        <View
-          style={{
-            flex: 1,
-            backgroundColor: "black",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <ActivityIndicator size={"large"} color="#d05b19" />
-        </View>
-        // <View style={styles.cameraContainer}>
-        //   <FoodScannerAnimation imageUrl={imageUrl} />
-        // </View>
-      );
+      return <FoodScannerAnimation imageUri={imageUrl} />;
     }
   }
 
