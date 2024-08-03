@@ -6,72 +6,6 @@ import { UserWeight } from "../models/Weight/UserWeight.models.js";
 import { WeightLog } from "../models/Weight/WeightLog.models.js";
 import { format } from "date-fns";
 
-// export const registerUser = asyncHandler(async (req, res, next) => {
-//   const {
-//     uid,
-//     userName,
-//     email,
-//     age,
-//     gender,
-//     height,
-//     weight,
-//     goal,
-//     activityLevel,
-//     weeklyGoal,
-//     goalWeight,
-//     dailyCalorieValue,
-//   } = req.body;
-//   if (
-//     [uid, userName, email, goal, gender].some((field) => field.trim() === "")
-//   ) {
-//     throw new ApiError(400, "All field are required");
-//   }
-//   if (
-//     [
-//       age,
-//       height,
-//       weight,
-//       dailyCalorieValue,
-//       activityLevel,
-//       weeklyGoal,
-//       goalWeight,
-//     ].some((field) => field === 0)
-//   ) {
-//     throw new ApiError(400, "All field are required");
-//   }
-
-//   const existedUser = await User.findOne({ $or: [{ uid }, { email }] });
-
-//   if (existedUser) {
-//     throw new ApiError(409, "User is already existed");
-//   }
-
-//   const user = await User.create({
-//     uid,
-//     userName,
-//     email,
-//     age,
-//     gender,
-//     height,
-//     weight,
-//     goal,
-//     activityLevel,
-//     weeklyGoal,
-//     goalWeight,
-//     dailyCalorieValue,
-//   });
-
-//   const createdUser = await User.findById(user._id);
-
-//   if (!createdUser) {
-//     throw new ApiError(500, "Something went wrong while creating account");
-//   }
-
-//   return res
-//     .status(201)
-//     .json(new ApiResponse(201, user, "user registed Successfully"));
-// });
-
 export const registerUser = asyncHandler(async (req, res, next) => {
   const {
     uid,
@@ -86,6 +20,8 @@ export const registerUser = asyncHandler(async (req, res, next) => {
     weeklyGoal,
     goalWeight,
     dailyCalorieValue,
+    hasSeenFirstTimePaywall,
+    hasUsedFreeLogging,
   } = req.body;
 
   if (
@@ -126,6 +62,8 @@ export const registerUser = asyncHandler(async (req, res, next) => {
     weeklyGoal,
     goalWeight,
     dailyCalorieValue,
+    hasSeenFirstTimePaywall,
+    hasUsedFreeLogging,
   });
 
   const createdUser = await User.findById(user._id);
@@ -134,15 +72,13 @@ export const registerUser = asyncHandler(async (req, res, next) => {
     throw new ApiError(500, "Something went wrong while creating the account");
   }
 
-  // Add user's initial weight to the WeightLog collection
   const currentDate = new Date();
-  const formattedDate = format(currentDate, "yyyy-MM-dd"); // Format date as needed
+  const formattedDate = format(currentDate, "yyyy-MM-dd");
   const weightLog = await WeightLog.create({
     date: formattedDate,
     weight: weight,
   });
 
-  // Associate weight log entry with the user in the UserWeight collection
   await UserWeight.create({
     user: user._id,
     weights: [weightLog._id],
@@ -153,20 +89,15 @@ export const registerUser = asyncHandler(async (req, res, next) => {
     .json(new ApiResponse(201, user, "User registered successfully"));
 });
 
-// Get User Function
 export const getUser = asyncHandler(async (req, res, next) => {
   const { uid } = req.query;
-  console.log(uid);
   if (!uid || uid === "") {
     throw new ApiError(400, "User is required");
   }
 
   const user = await User.findOne({ uid });
 
-  console.log("USER IS", user);
-
   if (!user) {
-    // throw new ApiError(500, "Something went wrong while login ");
     return res
       .status(201)
       .json(new ApiResponse(201, null, "user login Successfully"));
@@ -175,4 +106,36 @@ export const getUser = asyncHandler(async (req, res, next) => {
   return res
     .status(201)
     .json(new ApiResponse(201, user, "user login Successfully"));
+});
+
+export const updateUserFlags = asyncHandler(async (req, res, next) => {
+  const { uid, hasSeenFirstTimePaywall, hasUsedFreeLogging } = req.body;
+
+  if (!uid) {
+    throw new ApiError(400, "User ID is required");
+  }
+
+  const updates = {};
+  if (typeof hasSeenFirstTimePaywall === "boolean") {
+    updates.hasSeenFirstTimePaywall = hasSeenFirstTimePaywall;
+  }
+  if (typeof hasUsedFreeLogging === "boolean") {
+    updates.hasUsedFreeLogging = hasUsedFreeLogging;
+  }
+
+  if (Object.keys(updates).length === 0) {
+    throw new ApiError(400, "No valid fields provided for update");
+  }
+
+  const updatedUser = await User.findOneAndUpdate({ uid }, updates, {
+    new: true,
+  });
+
+  if (!updatedUser) {
+    throw new ApiError(404, "User not found");
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, updatedUser, "User flags updated successfully"));
 });

@@ -4,7 +4,7 @@ import { format } from "date-fns";
 export const userWeightLog = async (uid, weight, date) => {
   try {
     const response = await axios.post(
-      "http://192.168.31.209:8000/api/v1/weight/addUserWeight",
+      "http://calorify.us-east-1.elasticbeanstalk.com/api/v1/weight/addUserWeight",
       {
         uid,
         weight,

@@ -7,8 +7,6 @@ import {
 
 const router = express.Router();
 
-// router.use(upload.single("foodImage"));
-
 router.route("/saveFood").post(saveFood);
 router.route("/deleteSavedFood").post(deleteFoodFromSavedFood);
 router.route("/getSavedFood").get(getSavedFood);

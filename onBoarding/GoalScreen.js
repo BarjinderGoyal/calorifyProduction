@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 import React, { useState } from "react";
+import Toast from "react-native-simple-toast";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "react-native-vector-icons";
 import { useNavigation } from "@react-navigation/native";
@@ -66,7 +67,7 @@ const GoalScreen = () => {
             name="chevron-back"
             color="black"
             size={30}
-            onPress={() => navigation.goBack()}
+            onPress={() => Toast.show("Cannot go back", Toast.SHORT)}
           />
           <View style={styles.innerBarContainer}>
             {[...new Array(1)].map((_, index) => (

@@ -53,6 +53,12 @@ const userSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
+    hasSeenFirstTimePaywall: {
+      type: Boolean,
+    },
+    hasUsedFreeLogging: {
+      type: Boolean,
+    },
   },
   {
     timestamps: true,

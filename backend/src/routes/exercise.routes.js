@@ -6,8 +6,6 @@ import {
 
 const router = express.Router();
 
-// router.use(upload.single("foodImage"));
-
 router.route("/addExercises").post(setExercises);
 router.route("/getExercises").get(getExercises);
 

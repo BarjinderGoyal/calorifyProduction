@@ -6,22 +6,10 @@ import { Ionicons, AntDesign, Entypo } from "react-native-vector-icons";
 import Home from "./Home";
 import Analytics from "./Analytics";
 import Account from "./Account";
-import { bottomSheetUseContext } from "../Context/BottomSheetContext";
 
 const Tab = createBottomTabNavigator();
 
 const ScreenNavigation = () => {
-  const { bottomSheetIsOpen } = bottomSheetUseContext();
-  const [isTabBarVisible, setIsTabBarVisible] = useState(true);
-
-  useEffect(() => {
-    console.log(
-      "value of bottomSheetIsOpen in bottom tab navigator container",
-      bottomSheetIsOpen
-    );
-    setIsTabBarVisible(!bottomSheetIsOpen);
-  }, [bottomSheetIsOpen]);
-
   return (
     <Tab.Navigator
       screenOptions={{
@@ -29,7 +17,7 @@ const ScreenNavigation = () => {
         headerShown: false,
         tabBarActiveTintColor: "#ee7214", //#C0D6E8
         tabBarInactiveTintColor: "lightgrey",
-        tabBarStyle: { display: isTabBarVisible ? "flex" : "none" },
+        tabBarStyle: "flex",
       }}
     >
       <Tab.Screen

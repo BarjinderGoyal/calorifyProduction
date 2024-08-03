@@ -4,7 +4,7 @@ export const saveFood = async (uid, foodId) => {
   console.log(uid, foodId);
   try {
     const response = await axios.post(
-      "http://192.168.31.209:8000/api/v1/food/saveFood",
+      "http://calorify.us-east-1.elasticbeanstalk.com/api/v1/food/saveFood",
       {
         uid,
         foodId,
@@ -23,7 +23,7 @@ export const deletFoodFromSavedFood = async (uid, foodId) => {
   console.log(uid, foodId);
   try {
     const response = await axios.post(
-      "http://192.168.31.209:8000/api/v1/food/deleteSavedFood",
+      "http://calorify.us-east-1.elasticbeanstalk.com/api/v1/food/deleteSavedFood",
       {
         uid,
         foodId,
@@ -41,7 +41,7 @@ export const deletFoodFromSavedFood = async (uid, foodId) => {
 export const getSavedFoodFromBackend = async (uid) => {
   try {
     const response = await axios.get(
-      "http://192.168.31.209:8000/api/v1/food/getSavedFood",
+      "http://calorify.us-east-1.elasticbeanstalk.com/api/v1/food/getSavedFood",
       {
         params: {
           uid,

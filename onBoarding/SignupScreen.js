@@ -30,36 +30,35 @@ import { getUserFromDatabase } from "../functions/GetUserFromDatabase";
 const { width, height } = Dimensions.get("window");
 
 const SignupScreen = () => {
-  const [signInUser, setsignInUser] = useState();
   const navigation = useNavigation();
   const [request, response, promptAsync] = Google.useAuthRequest({
     androidClientId:
-      "14057899659-vdtgh7nmq9ho1geasham7inhmlbicev4.apps.googleusercontent.com",
+      "254552787517-bvga6d8qlh4l56ehlhd69qgrl41kqsgo.apps.googleusercontent.com",
   });
   const { user, setUserInfo } = useOnBoardingContext();
   const { handleUserDetail, setUid } = userAuthUseContext();
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    const backAction = () => {
-      Alert.alert("Hold on!", "Are you sure you want to exit the app?", [
-        {
-          text: "Cancel",
-          onPress: () => null,
-          style: "cancel",
-        },
-        { text: "YES", onPress: () => BackHandler.exitApp() },
-      ]);
-      return true;
-    };
+  // useEffect(() => {
+  //   const backAction = () => {
+  //     Alert.alert("Hold on!", "Are you sure you want to exit the app?", [
+  //       {
+  //         text: "Cancel",
+  //         onPress: () => null,
+  //         style: "cancel",
+  //       },
+  //       { text: "YES", onPress: () => BackHandler.exitApp() },
+  //     ]);
+  //     return true;
+  //   };
 
-    const backHandler = BackHandler.addEventListener(
-      "hardwareBackPress",
-      backAction
-    );
+  //   const backHandler = BackHandler.addEventListener(
+  //     "hardwareBackPress",
+  //     backAction
+  //   );
 
-    return () => backHandler.remove();
-  }, []);
+  //   return () => backHandler.remove();
+  // }, []);
 
   useEffect(() => {
     if (response?.type === "success") {
@@ -72,10 +71,10 @@ const SignupScreen = () => {
   }, [response]);
 
   useEffect(() => {
-    setLoading(true);
     const unsub = onAuthStateChanged(auth, async (user) => {
       try {
         if (user) {
+          setLoading(true);
           console.log(user);
           const response = await getUserFromDatabase(user?.uid);
           console.log("RESPONSE FROM BACKEND USER DATA   =>>", response);

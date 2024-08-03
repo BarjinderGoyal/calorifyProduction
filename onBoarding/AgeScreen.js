@@ -14,7 +14,7 @@ import { useOnBoardingContext } from "../Context/OnBoardingContext";
 
 const { width } = Dimensions.get("window");
 
-const barItemWidth = (width - 120) / 8;
+const barItemWidth = (width - 140) / 8;
 
 const AgeScreen = () => {
   const { setUserInfo } = useOnBoardingContext();

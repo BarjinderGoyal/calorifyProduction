@@ -17,18 +17,6 @@ import {
 
 export const addNutrition = asyncHandler(async (req, res, next) => {
   const { uid, mealData, meal, date, foodImage } = req.body;
-  console.log(
-    uid,
-    "     ",
-    meal,
-    "        ",
-    mealData,
-    "         ",
-    date,
-    "ffffff",
-    foodImage,
-    typeof foodImage
-  );
 
   if (!mealData || !meal || !uid || !date) {
     throw new ApiError(400, "Missing required fields");
@@ -39,11 +27,9 @@ export const addNutrition = asyncHandler(async (req, res, next) => {
     throw new ApiError(400, "User does not exist");
   }
 
-  // Extract main meal information and ingredients
   const { name, quantity, calories, protein, carbs, fat, ingredients } =
     mealData;
 
-  // Create the main food item document (the overall meal)
   const mainFoodItem = new FoodItem({
     name,
     foodImage: foodImage,
@@ -51,26 +37,23 @@ export const addNutrition = asyncHandler(async (req, res, next) => {
     carbs: parseFloat(carbs),
     protein: parseFloat(protein),
     fat: parseFloat(fat),
-    quantity: Array.isArray(quantity) ? quantity : [quantity], // Ensure it's an array
-    ingredients: [], // Will add ingredient IDs after creation
+    quantity: Array.isArray(quantity) ? quantity : [quantity],
+    ingredients: [],
   });
 
-  // Save the main food item (the overall meal)
   await mainFoodItem.save();
 
-  // Process and save each ingredient
   const ingredientDocuments = ingredients.map((item) => ({
     name: item.name,
     calories: parseFloat(item.calories),
     carbs: parseFloat(item.carbs),
     protein: parseFloat(item.protein),
     fat: parseFloat(item.fat),
-    quantity: Array.isArray(item.quantity) ? item.quantity : [item.quantity], // Ensure it's an array
+    quantity: Array.isArray(item.quantity) ? item.quantity : [item.quantity],
   }));
 
   const insertedIngredients = await FoodItem.insertMany(ingredientDocuments);
 
-  // Update the main food item with the references to the ingredient documents
   mainFoodItem.ingredients = insertedIngredients.map((item) => item._id);
   await mainFoodItem.save();
 
@@ -104,34 +87,33 @@ export const addNutrition = asyncHandler(async (req, res, next) => {
     await todayMeal.save();
   }
 
-  // Populate all meals and their food items, including ingredients, for the response
   const populatedDailyMeal = await DailyMeals.findOne({ user: user._id, date })
     .populate({
       path: "breakfast",
       populate: {
         path: "food_items",
-        populate: { path: "ingredients" }, // Populate ingredients inside food_items
+        populate: { path: "ingredients" },
       },
     })
     .populate({
       path: "lunch",
       populate: {
         path: "food_items",
-        populate: { path: "ingredients" }, // Populate ingredients inside food_items
+        populate: { path: "ingredients" },
       },
     })
     .populate({
       path: "snack",
       populate: {
         path: "food_items",
-        populate: { path: "ingredients" }, // Populate ingredients inside food_items
+        populate: { path: "ingredients" },
       },
     })
     .populate({
       path: "dinner",
       populate: {
         path: "food_items",
-        populate: { path: "ingredients" }, // Populate ingredients inside food_items
+        populate: { path: "ingredients" },
       },
     });
 
@@ -140,19 +122,14 @@ export const addNutrition = asyncHandler(async (req, res, next) => {
     .json(new ApiResponse(201, populatedDailyMeal, "Meal added successfully"));
 });
 
-// Function to get daily meals based on user and date
 export const getDailyMeals = asyncHandler(async (req, res, next) => {
   const { uid, date } = req.query;
-
-  console.log(uid, date);
 
   if (!uid || !date) {
     throw new ApiError(400, "User and date are required");
   }
 
   const user = await User.findOne({ uid });
-
-  console.log("user is", user);
 
   if (!user) {
     throw new ApiError(404, "User not found");
@@ -173,12 +150,11 @@ export const getDailyMeals = asyncHandler(async (req, res, next) => {
     .exec();
 
   if (!dailyMeals) {
-    // throw new ApiError(404, "No meals found for the specified date");
     return res.status(200).json(new ApiResponse(201, null));
   }
 
   res.status(200).json(new ApiResponse(201, dailyMeals));
-}); // Delete Food item inside meal
+});
 
 const deleteFoodFromMeal = asyncHandler(async (req, res, next) => {
   const { uid, meal, foodItemId, date } = req.query;
@@ -215,7 +191,6 @@ const deleteFoodFromMeal = asyncHandler(async (req, res, next) => {
     { $pull: { food: foodItemId } }
   );
 
-  // Deleting the food item document if it exists
   const foodItem = await FoodItem.findById(foodItemId);
   if (foodItem) {
     await FoodItem.findByIdAndDelete(foodItemId);
@@ -283,10 +258,6 @@ export { updateFoodInMeal };
 //   const startOfWeekDate = startOfWeek(currentDate, { weekStartsOn: 0 }); // 0 means Sunday
 //   const endOfWeekDate = endOfWeek(currentDate, { weekStartsOn: 0 }); // 0 means Sunday
 
-//   console.log(
-//     `Fetching daily meals and exercises for user ${uid} from ${startOfWeekDate} to ${endOfWeekDate}`
-//   );
-
 //   try {
 //     // Fetching daily meals
 //     const dailyMeals = await DailyMeals.find({
@@ -323,8 +294,6 @@ export { updateFoodInMeal };
 //     }).populate("exercise");
 
 //     // Debugging fetched data
-//     console.log("Raw daily meals data:", dailyMeals);
-//     console.log("Raw exercises data:", exercises);
 
 //     const weekDays = eachDayOfInterval({
 //       start: startOfWeekDate,
@@ -339,10 +308,6 @@ export { updateFoodInMeal };
 //       const dayExercises = exercises.find((exercise) =>
 //         isSameDay(new Date(exercise.date), day)
 //       );
-
-//       console.log(`Day: ${day}`);
-//       console.log("Day meals:", dayMeals);
-//       console.log("Day exercises:", dayExercises);
 
 //       const meals = [
 //         dayMeals?.breakfast,
@@ -368,7 +333,7 @@ export { updateFoodInMeal };
 
 //       const totalCaloriesBurned = dayExercises
 //         ? dayExercises.exercise.reduce((total, exerciseItem) => {
-//             console.log("Exercise item:", exerciseItem);
+
 //             return total + Number(exerciseItem.caloriesBurned);
 //           }, 0)
 //         : 0;
@@ -381,10 +346,8 @@ export { updateFoodInMeal };
 //       return dayNutrition;
 //     });
 
-//     console.log("WEEKLY NUTRITION RESPONSE IS ", response);
 //     res.status(200).json(new ApiResponse(200, response));
 //   } catch (error) {
-//     console.error(error);
 //     next(new ApiError(500, "Internal Server Error"));
 //   }
 // });
@@ -405,12 +368,7 @@ export const weeklyNutritionDetail = asyncHandler(async (req, res, next) => {
   const startOfWeekDate = startOfWeek(currentDate, { weekStartsOn: 0 });
   const endOfWeekDate = endOfWeek(currentDate, { weekStartsOn: 0 });
 
-  console.log(
-    `Fetching daily meals and exercises for user ${uid} from ${startOfWeekDate} to ${endOfWeekDate}`
-  );
-
   try {
-    // Aggregation for daily meals
     const dailyMeals = await DailyMeals.aggregate([
       {
         $match: {
@@ -497,16 +455,11 @@ export const weeklyNutritionDetail = asyncHandler(async (req, res, next) => {
       },
     ]);
 
-    console.log("Aggregated daily meals data:", dailyMeals);
-    console.log("Aggregated exercises data:", exercises);
-
-    // Create an interval of days for the week
     const weekDays = eachDayOfInterval({
       start: startOfWeekDate,
       end: endOfWeekDate,
     });
 
-    // Map through each day to compute nutrition details
     const response = weekDays.map((day) => {
       const dayMeals = dailyMeals.find((dailyMeal) =>
         isSameDay(new Date(dailyMeal._id), day)
@@ -515,10 +468,6 @@ export const weeklyNutritionDetail = asyncHandler(async (req, res, next) => {
       const dayExercises = exercises.find((exercise) =>
         isSameDay(new Date(exercise._id), day)
       );
-
-      console.log(`Day: ${day}`);
-      console.log("Day meals:", dayMeals);
-      console.log("Day exercises:", dayExercises);
 
       const dayNutrition = {
         date: day,
@@ -541,17 +490,14 @@ export const weeklyNutritionDetail = asyncHandler(async (req, res, next) => {
       return dayNutrition;
     });
 
-    console.log("WEEKLY NUTRITION RESPONSE IS ", response);
     res.status(200).json(new ApiResponse(200, response));
   } catch (error) {
-    console.error(error);
     next(new ApiError(500, "Internal Server Error"));
   }
 });
 
 export const fetchFoodFromFoodItemId = asyncHandler(async (req, res, next) => {
   const { foodId } = req.query;
-  console.log("foodidnis", foodId);
   if (!foodId) {
     throw new ApiError(400, "Required item is missing");
   }

@@ -5,7 +5,7 @@ export const logFood = async (uid, meal, mealData, foodImage) => {
   console.log(meal, mealData, date, foodImage);
   try {
     const response = await axios.post(
-      "http://192.168.31.209:8000/api/v1/meal/addMeal",
+      "http://calorify.us-east-1.elasticbeanstalk.com/api/v1/meal/addMeal",
       {
         uid,
         meal,

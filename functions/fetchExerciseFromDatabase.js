@@ -3,7 +3,7 @@ import axios from "axios";
 export const fetchExerciseFromDatabase = async (uid, date) => {
   try {
     const response = await axios.get(
-      "http://192.168.31.209:8000/api/v1/exercise/getExercises",
+      "http://calorify.us-east-1.elasticbeanstalk.com/api/v1/exercise/getExercises",
       {
         params: {
           uid,

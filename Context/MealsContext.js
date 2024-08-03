@@ -700,24 +700,13 @@ const MealsContext = ({ children }) => {
   const getMySavedFood = async (uid) => {
     try {
       const response = await getSavedFoodFromBackend(uid);
-      if (response) {
-        console.log(
-          "noerrrorrororrorororrororororororororororroroororororororrorororoororororororororororo",
-          response,
-          "     ",
-          response?.food
-        );
-        setSavedFood(response);
+      if (response?.food) {
+        setSavedFood(response?.food);
       } else {
         setSavedFood([]);
       }
     } catch (e) {
       Toast.show("something went wrong", Toast.LONG);
-
-      console.log(
-        "error while get food item?????KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK",
-        e
-      );
     }
   };
 

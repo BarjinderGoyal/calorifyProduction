@@ -1,5 +1,4 @@
 import express from "express";
-import { registerUser, getUser } from "../controllers/user.controllers.js";
 import {
   fetchExerciseData,
   fetchNutritonFromImage,

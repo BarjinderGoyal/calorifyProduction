@@ -8,7 +8,7 @@ import MealsContext from "./Context/MealsContext";
 
 import Superwall from "@superwall/react-native-superwall";
 
-// android client id =14057899659-p5rrbf2sqau7v8piqh9uh6llk6n4074l.apps.googleusercontent.com
+// android client id =254552787517-bvga6d8qlh4l56ehlhd69qgrl41kqsgo.apps.googleusercontent.com
 
 export default function App() {
   useEffect(() => {

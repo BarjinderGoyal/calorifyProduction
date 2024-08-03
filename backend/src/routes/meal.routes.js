@@ -7,11 +7,8 @@ import {
   weeklyNutritionDetail,
   fetchFoodFromFoodItemId,
 } from "../controllers/meal.controllers.js";
-import { upload } from "../middlewares/multer.middleware.js";
 
 const router = express.Router();
-
-// router.use(upload.single("foodImage"));
 
 router.route("/addMeal").post(addNutrition);
 router.route("/getMeal").get(getDailyMeals);

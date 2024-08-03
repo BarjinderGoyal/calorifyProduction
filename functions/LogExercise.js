@@ -6,7 +6,7 @@ export const logExerciseToDatabase = async (uid, exercises) => {
 
   try {
     const response = await axios.post(
-      "http://192.168.31.209:8000/api/v1/exercise/addExercises",
+      "http://calorify.us-east-1.elasticbeanstalk.com/api/v1/exercise/addExercises",
       { uid, exercises, date }
     );
     if (response) {

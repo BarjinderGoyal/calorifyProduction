@@ -52,7 +52,7 @@ export const createAccount = async (
     console.log(dailyCalorieValue, " calculted value of calorie");
 
     const response = await axios.post(
-      "http://192.168.31.209:8000/api/v1/user/register",
+      "http://calorify.us-east-1.elasticbeanstalk.com/api/v1/user/register",
       {
         uid,
         userName,

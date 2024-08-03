@@ -8,7 +8,7 @@ import { SavedFood } from "../models/SavedFood/SavedFood.models.js";
 
 export const saveFood = asyncHandler(async (req, res, next) => {
   const { uid, foodId } = req.body;
-  console.log("uid is and fofodid", uid, foodId);
+
   if (!uid) {
     throw new ApiError(400, "Uid is missing");
   }
@@ -22,16 +22,13 @@ export const saveFood = asyncHandler(async (req, res, next) => {
     throw new ApiError(400, "User does not exist");
   }
 
-  // Check if the SavedFood document exists for the user
   let savedFoodDoc = await SavedFood.findOne({ user: user._id });
 
   if (savedFoodDoc) {
-    // If the SavedFood document exists, add the new foodId to the array if it's not already there
     if (!savedFoodDoc.food.includes(foodId)) {
       savedFoodDoc.food.push(foodId);
     }
   } else {
-    // If the SavedFood document does not exist, create a new one
     savedFoodDoc = new SavedFood({
       user: user._id,
       food: [foodId],
@@ -40,7 +37,6 @@ export const saveFood = asyncHandler(async (req, res, next) => {
 
   await savedFoodDoc.save();
 
-  // Update the isSaved field of the FoodItem
   const foodItem = await FoodItem.findById(foodId);
   if (!foodItem) {
     throw new ApiError(400, "Food item does not exist");
@@ -48,7 +44,6 @@ export const saveFood = asyncHandler(async (req, res, next) => {
   foodItem.isSaved = true;
   await foodItem.save();
 
-  // Populate the food items in the response
   const populatedSavedFoodDoc = await SavedFood.findById(
     savedFoodDoc._id
   ).populate("food");
@@ -64,7 +59,6 @@ export const saveFood = asyncHandler(async (req, res, next) => {
     );
 });
 
-// Delete Food From SavedFood
 export const deleteFoodFromSavedFood = asyncHandler(async (req, res, next) => {
   const { uid, foodId } = req.body;
   if (!uid) {
@@ -80,11 +74,9 @@ export const deleteFoodFromSavedFood = asyncHandler(async (req, res, next) => {
     throw new ApiError(400, "User does not exist");
   }
 
-  // Find the SavedFood document for the user
   const savedFoodDoc = await SavedFood.findOne({ user: user._id });
 
   if (savedFoodDoc) {
-    // Remove the foodId from the array
     savedFoodDoc.food = savedFoodDoc.food.filter(
       (id) => id.toString() !== foodId
     );
@@ -92,7 +84,6 @@ export const deleteFoodFromSavedFood = asyncHandler(async (req, res, next) => {
     await savedFoodDoc.save();
   }
 
-  // Update the isSaved field of the FoodItem
   const foodItem = await FoodItem.findById(foodId);
   if (!foodItem) {
     throw new ApiError(400, "Food item does not exist");
@@ -115,7 +106,6 @@ export const deleteFoodFromSavedFood = asyncHandler(async (req, res, next) => {
     );
 });
 
-// Get Saved Food
 export const getSavedFood = asyncHandler(async (req, res, next) => {
   const { uid } = req.query;
 
@@ -129,18 +119,15 @@ export const getSavedFood = asyncHandler(async (req, res, next) => {
     throw new ApiError(400, "User does not exist");
   }
 
-  // Find the SavedFood document for the user and populate the food items
   const savedFoodDoc = await SavedFood.findOne({ user: user._id }).populate(
     "food"
   );
 
-  res
-    .status(200)
-    .json(
-      new ApiResponse(
-        200,
-        savedFoodDoc ? savedFoodDoc.food : [],
-        "Saved food retrieved successfully"
-      )
-    );
+  res.status(200).json(
+    new ApiResponse(
+      200,
+      savedFoodDoc, // savedFoodDoc ? savedFoodDoc.food : [],
+      "Saved food retrieved successfully"
+    )
+  );
 });

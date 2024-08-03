@@ -11,7 +11,7 @@ export const fetchNutritionsFromImage = async (foodImage) => {
   console.log("FORMFORMFORMFOFRMOFMFOFFOMFFOFMFOMFOFFFOFFFMFFOF00", formData);
   try {
     const response = await axios.post(
-      "http://192.168.31.209:8000/api/v1/openAi/imageNutrition",
+      "http://calorify.us-east-1.elasticbeanstalk.com/api/v1/openAi/imageNutrition",
       formData,
       {
         headers: {
@@ -32,7 +32,7 @@ export const fetchNutritionsFromImage = async (foodImage) => {
 export const fetchNutritionsFromText = async (foodDetails) => {
   try {
     const response = await axios.post(
-      "http://192.168.31.209:8000/api/v1/openAi/textNutrition",
+      "http://calorify.us-east-1.elasticbeanstalk.com/api/v1/openAi/textNutrition",
       {
         foodDetails,
       }
@@ -51,7 +51,7 @@ export const fetchNutritionsFromText = async (foodDetails) => {
 export const fetchExerciseData = async (exerciseDetails) => {
   try {
     const response = await axios.post(
-      "http://192.168.31.209:8000/api/v1/openAi/exercise",
+      "http://calorify.us-east-1.elasticbeanstalk.com/api/v1/openAi/exercise",
       {
         exerciseDetails,
       }
@@ -74,7 +74,7 @@ export const updateIngredient = async (
   try {
     //updateIngredient
     const response = await axios.post(
-      "http://192.168.31.209:8000/api/v1/openAi/updateIngredient",
+      "http://calorify.us-east-1.elasticbeanstalk.com/api/v1/openAi/updateIngredient",
       {
         originalResponse,
         additionalIngredients,

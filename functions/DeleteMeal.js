@@ -3,7 +3,7 @@ import axios from "axios";
 export const deleteFoodFromMeal = async (uid, meal, foodItemId, date) => {
   try {
     const response = await axios.delete(
-      "http://192.168.31.209:8000/api/v1/meal/deleteMeal",
+      "http://calorify.us-east-1.elasticbeanstalk.com/api/v1/meal/deleteMeal",
       {
         params: {
           uid,
