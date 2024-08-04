@@ -1,11 +1,12 @@
 import axios from "axios";
+import {BASE_ENDPOINT_URL} from "../Constants"
 
 export const logFood = async (uid, meal, mealData, foodImage) => {
   const date = getTodayDate();
   console.log(meal, mealData, date, foodImage);
   try {
     const response = await axios.post(
-      "http://calorify.us-east-1.elasticbeanstalk.com/api/v1/meal/addMeal",
+      `${BASE_ENDPOINT_URL}/api/v1/meal/addMeal`,
       {
         uid,
         meal,

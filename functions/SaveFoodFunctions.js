@@ -1,10 +1,11 @@
 import axios from "axios";
+import { BASE_ENDPOINT_URL } from "../Constants";
 
 export const saveFood = async (uid, foodId) => {
   console.log(uid, foodId);
   try {
     const response = await axios.post(
-      "http://calorify.us-east-1.elasticbeanstalk.com/api/v1/food/saveFood",
+      `${BASE_ENDPOINT_URL}/api/v1/food/saveFood`,
       {
         uid,
         foodId,
@@ -23,7 +24,7 @@ export const deletFoodFromSavedFood = async (uid, foodId) => {
   console.log(uid, foodId);
   try {
     const response = await axios.post(
-      "http://calorify.us-east-1.elasticbeanstalk.com/api/v1/food/deleteSavedFood",
+      `${BASE_ENDPOINT_URL}/api/v1/food/deleteSavedFood`,
       {
         uid,
         foodId,
@@ -41,7 +42,7 @@ export const deletFoodFromSavedFood = async (uid, foodId) => {
 export const getSavedFoodFromBackend = async (uid) => {
   try {
     const response = await axios.get(
-      "http://calorify.us-east-1.elasticbeanstalk.com/api/v1/food/getSavedFood",
+      `${BASE_ENDPOINT_URL}/api/v1/food/getSavedFood`,
       {
         params: {
           uid,

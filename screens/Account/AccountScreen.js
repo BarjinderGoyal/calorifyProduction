@@ -69,7 +69,7 @@ const AccountScreen = () => {
 
   return (
     <View style={styles.container}>
-      <ScrollView showsVerticalScrollIndicator={false}>
+      {/* <ScrollView showsVerticalScrollIndicator={false}> */}
         <SafeAreaView style={styles.innerContainer}>
           <View style={styles.topContainer}>
             {/* <Ionicons name="person" size={60} color="black" /> */}
@@ -81,19 +81,19 @@ const AccountScreen = () => {
               return <RenderOptions item={item} index={index} key={index} />;
             })}
           </View>
-          <View style={styles.footerContainer}>
+          {/* <View style={styles.footerContainer}> */}
             <TouchableOpacity
               style={styles.footerInnerContainer}
               onPress={handleLogout}
             >
               <Text style={styles.footerButtonText}>Logout</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.footerInnerContainer}>
+            {/* <TouchableOpacity style={styles.footerInnerContainer}>
               <Text style={styles.footerButtonText}>Delete Account</Text>
-            </TouchableOpacity>
-          </View>
+            </TouchableOpacity> */}
+          {/* </View> */}
         </SafeAreaView>
-      </ScrollView>
+      {/* </ScrollView> */}
     </View>
   );
 };
@@ -132,15 +132,18 @@ const styles = StyleSheet.create({
   },
   middleInnerContainerOptions: {
     gap: 5,
+    // flexDirection:"row",
+    // justifyContent:"space-between",
+    // alignItems:"center"
   },
   middleContainerOptionName: {
-    fontSize: 18,
-    fontWeight: "600",
+    fontSize: 16,
+    // fontWeight: "600",
     color: "black",
   },
   middleContainerOptionValue: {
     fontSize: 16,
-    fontWeight: "600",
+    // fontWeight: "600",
     color: "black",
   },
   footerContainer: {
@@ -153,7 +156,7 @@ const styles = StyleSheet.create({
     // elevation: 2,
   },
   footerInnerContainer: {
-    padding: 10,
+    padding: 20,
     borderRadius: 20,
     borderWidth: 1,
     borderColor: "lightgrey",
@@ -161,6 +164,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     marginBottom: 10,
+    backgroundColor:"white"
   },
   footerButtonText: {
     fontSize: 18,

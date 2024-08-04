@@ -1,9 +1,10 @@
 import axios from "axios";
+import { BASE_ENDPOINT_URL } from "../Constants";
 
 export const fetchFoodDetailFromFoodId = async (foodId) => {
   try {
     const response = await axios.get(
-      "http://calorify.us-east-1.elasticbeanstalk.com/api/v1/meal/getSavedFoodDetail",
+      `${BASE_ENDPOINT_URL}/api/v1/meal/getSavedFoodDetail`,
       {
         params: {
           foodId,

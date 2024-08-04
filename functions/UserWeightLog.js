@@ -1,10 +1,11 @@
 import axios from "axios";
 import { format } from "date-fns";
+import { BASE_ENDPOINT_URL } from "../Constants";
 
 export const userWeightLog = async (uid, weight, date) => {
   try {
     const response = await axios.post(
-      "http://calorify.us-east-1.elasticbeanstalk.com/api/v1/weight/addUserWeight",
+      `${BASE_ENDPOINT_URL}/api/v1/weight/addUserWeight`,
       {
         uid,
         weight,

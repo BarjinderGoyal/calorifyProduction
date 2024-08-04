@@ -321,6 +321,7 @@ const styles = StyleSheet.create({
     borderColor: "lightgrey",
     // elevation: 2,
     backgroundColor: "white",
+    overflow:"hidden"
   },
   mealName: {
     fontSize: 16,
@@ -328,6 +329,7 @@ const styles = StyleSheet.create({
     color: "black",
     padding: 10,
     borderRadius: 20,
+    overflow:"hidden"
   },
   mealContainer: {
     paddingHorizontal: 10,

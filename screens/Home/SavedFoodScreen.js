@@ -8,6 +8,7 @@ import {
   Image,
   FlatList,
 } from "react-native";
+import Toast from "react-native-simple-toast"
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons, AntDesign } from "react-native-vector-icons";
@@ -111,7 +112,10 @@ const SavedFoodScreen = () => {
 
   const handleLogFood = async () => {
     console.log(selectedIndex, "sselectedOIndex");
-    if (selectedIndex === null) return;
+    if (selectedIndex === null){
+      Toast.show('Meal is not selected',Toast.SHORT);
+      return;
+    }
     setLoading(true);
     const foodId = savedFood[selectedIndex]?._id;
     console.log(foodId, savedFood);

@@ -1,4 +1,5 @@
 import axios from "axios";
+import { BASE_ENDPOINT_URL } from "../Constants";
 
 export const fetchNutritionsFromImage = async (foodImage) => {
   const formData = new FormData();
@@ -11,7 +12,7 @@ export const fetchNutritionsFromImage = async (foodImage) => {
   console.log("FORMFORMFORMFOFRMOFMFOFFOMFFOFMFOMFOFFFOFFFMFFOF00", formData);
   try {
     const response = await axios.post(
-      "http://calorify.us-east-1.elasticbeanstalk.com/api/v1/openAi/imageNutrition",
+      `${BASE_ENDPOINT_URL}/api/v1/openAi/imageNutrition`,
       formData,
       {
         headers: {
@@ -32,7 +33,7 @@ export const fetchNutritionsFromImage = async (foodImage) => {
 export const fetchNutritionsFromText = async (foodDetails) => {
   try {
     const response = await axios.post(
-      "http://calorify.us-east-1.elasticbeanstalk.com/api/v1/openAi/textNutrition",
+      `${BASE_ENDPOINT_URL}/api/v1/openAi/textNutrition`,
       {
         foodDetails,
       }
@@ -51,7 +52,7 @@ export const fetchNutritionsFromText = async (foodDetails) => {
 export const fetchExerciseData = async (exerciseDetails) => {
   try {
     const response = await axios.post(
-      "http://calorify.us-east-1.elasticbeanstalk.com/api/v1/openAi/exercise",
+      `${BASE_ENDPOINT_URL}/api/v1/openAi/exercise`,
       {
         exerciseDetails,
       }
@@ -74,7 +75,7 @@ export const updateIngredient = async (
   try {
     //updateIngredient
     const response = await axios.post(
-      "http://calorify.us-east-1.elasticbeanstalk.com/api/v1/openAi/updateIngredient",
+      `${BASE_ENDPOINT_URL}/api/v1/openAi/updateIngredient`,
       {
         originalResponse,
         additionalIngredients,

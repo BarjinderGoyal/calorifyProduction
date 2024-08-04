@@ -1,9 +1,11 @@
 import axios from "axios";
+import { BASE_ENDPOINT_URL } from "../Constants";
 
 export const getUserFromDatabase = async (uid) => {
+  console.log("UID", uid)
   try {
-    const response = axios.get(
-      "http://calorify.us-east-1.elasticbeanstalk.com/api/v1/user/login",
+    const response = await axios.get(
+      `${BASE_ENDPOINT_URL}/api/v1/user/login`,
       {
         params: {
           uid,
@@ -16,6 +18,7 @@ export const getUserFromDatabase = async (uid) => {
       return null;
     }
   } catch (e) {
+    console.log("ERROR", e.response.data, e.response.status)
     throw new Error(e);
   }
 };
