@@ -144,29 +144,29 @@ const Meals = ({ mealName }) => {
   }, [meals, exercise, meals, openedMealName]);
 
   const handleAddClick = () => {
-    Superwall.shared.register("logMeal").then(() => {
-      if (mealName !== "exercise") {
-        updateSelectedMeal(mealName.toLowerCase());
-        updateBottomSheet(true);
-      } else {
-        navigation.navigate("searchScreen", {
-          previousScreen: "exercise",
-        });
-      }
-    });
+    // Superwall.shared.register("logMeal").then(() => {
+    //   if (mealName !== "exercise") {
+    //     updateSelectedMeal(mealName.toLowerCase());
+    //     updateBottomSheet(true);
+    //   } else {
+    //     navigation.navigate("searchScreen", {
+    //       previousScreen: "exercise",
+    //     });
+    //   }
+    // });
 
     // navigation.navigate("cameraScreen", {
     //   previousScreen: "camera",
     // });
 
-    // if (mealName !== "exercise") {
-    //   updateSelectedMeal(mealName.toLowerCase());
-    //   updateBottomSheet(true);
-    // } else {
-    //   navigation.navigate("searchScreen", {
-    //     previousScreen: "exercise",
-    //   });
-    // }
+    if (mealName !== "exercise") {
+      updateSelectedMeal(mealName.toLowerCase());
+      updateBottomSheet(true);
+    } else {
+      navigation.navigate("searchScreen", {
+        previousScreen: "exercise",
+      });
+    }
   };
 
   const handleUpArrow = useCallback(() => {

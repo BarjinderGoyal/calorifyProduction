@@ -1,9 +1,10 @@
 import axios from "axios";
+import { BASE_ENDPOINT_URL } from "../Constants";
 
 export const deleteFoodFromMeal = async (uid, meal, foodItemId, date) => {
   try {
     const response = await axios.delete(
-      "http://calorify.us-east-1.elasticbeanstalk.com/api/v1/meal/deleteMeal",
+      `${BASE_ENDPOINT_URL}/api/v1/meal/deleteMeal`,
       {
         params: {
           uid,

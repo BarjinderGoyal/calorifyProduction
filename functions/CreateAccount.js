@@ -1,5 +1,6 @@
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import {BASE_ENDPOINT_URL} from "../Constants"
 
 export const createAccount = async (
   uid,
@@ -15,6 +16,10 @@ export const createAccount = async (
   weeklyGoal
 ) => {
   try {
+    console.log(
+      userHeight,
+      goalWeight,
+      weeklyGoal)
     if (
       !uid ||
       !userName ||
@@ -30,36 +35,33 @@ export const createAccount = async (
     ) {
       return;
     }
-    let heightInCm = userHeight[0];
-    if (userHeight[1] === "ft") {
-      console.log(userHeight[0].ft, userHeight[0].in);
-      heightInCm = heightInFeetAndInchesToCm(
-        Number(userHeight[0].ft),
-        Number(userHeight[0].in)
-      );
-    }
+    console.log("trying to create an account")
+
 
     const dailyCalorieValue = calculateDailyCaloricIntake(
       Number(weight),
       Number(weeklyGoal),
       gender,
       Number(age),
-      Number(heightInCm),
+      Number(userHeight),
       Number(activityLevel),
       goal
     );
-
+    if (dailyCalorieValue <= 0) {
+      throw new Error("User information is incorrect.")
+      return;
+    }
     console.log(dailyCalorieValue, " calculted value of calorie");
 
     const response = await axios.post(
-      "http://calorify.us-east-1.elasticbeanstalk.com/api/v1/user/register",
+      `${BASE_ENDPOINT_URL}/api/v1/user/register`,
       {
         uid,
         userName,
         email,
         age: Number(age),
         gender,
-        height: Number(heightInCm),
+        height: Number(userHeight),
         weight: Number(weight),
         goal,
         activityLevel: Number(activityLevel),
@@ -74,15 +76,6 @@ export const createAccount = async (
   }
 };
 
-function heightInFeetAndInchesToCm(feet, inches) {
-  const cmPerFoot = 30.48;
-  const cmPerInch = 2.54;
-
-  // Convert feet to cm and inches to cm, then sum them up
-  const heightInCm = feet * cmPerFoot + inches * cmPerInch;
-
-  return heightInCm;
-}
 
 const calculateDailyCaloricIntake = (
   weight,

@@ -260,6 +260,7 @@ import {
   TextInput,
 } from "react-native";
 import React, { useState } from "react";
+import Toast from "react-native-simple-toast"
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "react-native-vector-icons";
 import { useNavigation } from "@react-navigation/native";
@@ -276,13 +277,16 @@ const WeightScreen = () => {
   const [weight, setWeight] = useState(null);
 
   const handleNext = () => {
-    if (weight !== null) {
+    const isNumeric = /^[0-9]*\.?[0-9]+$/.test(weight);
+    if (weight !== null && isNumeric) {
       setUserInfo("weight", weight);
       if (user?.goal !== "Maintain weight") {
         navigation.navigate("setWeightGoalScreen");
       } else {
         navigation.navigate("nameScreen");
       }
+    }else{
+      Toast.show('Weight is Invalid',Toast.SHORT)
     }
   };
 

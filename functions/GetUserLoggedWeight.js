@@ -1,9 +1,10 @@
 import axios from "axios";
+import { BASE_ENDPOINT_URL } from "../Constants";
 
 export const getUserLoggedWeight = async (uid) => {
   try {
     const response = await axios.get(
-      "http://calorify.us-east-1.elasticbeanstalk.com/api/v1/weight/getUserWeight",
+      `${BASE_ENDPOINT_URL}/api/v1/weight/getUserWeight`,
       {
         params: {
           uid,

@@ -11,6 +11,7 @@ import {
   Keyboard,
   Alert,
 } from "react-native";
+import Toast from "react-native-simple-toast";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "react-native-vector-icons";
 import { useOnBoardingContext } from "../Context/OnBoardingContext";
@@ -56,9 +57,15 @@ const SetWeightGoalScreen = () => {
   );
 
   const handleNext = () => {
+    console.log("weight goal" ,weightGoal,"user weight",user?.weight)
     if (weightGoal && selected) {
+      const isNumeric = /^[0-9]*\.?[0-9]+$/.test(weightGoal);
+      if (!isNumeric) {
+        Toast.show("Weight is Invalid", Toast.SHORT);
+        return;
+      }
       if (user?.goal === "Loose weight") {
-        if (weightGoal > user?.weight) {
+        if (Number(weightGoal) > Number(user?.weight)) {
           Alert.alert(
             "Alert",
             "You selected Lose weight as your goal. This goal weight is higher than your current weight.",
@@ -76,8 +83,12 @@ const SetWeightGoalScreen = () => {
           );
           return;
         }
+        setUserInfo("goalWeight", weightGoal);
+        setUserInfo("weeklyGoal", selected);
+        navigation.navigate("nameScreen");
       } else if (user?.goal === "Gain weight") {
-        if (weightGoal < user?.weight) {
+        
+        if (Number(weightGoal) < Number(user?.weight)) {
           Alert.alert(
             "Alert",
             "You selected Gain weight as your goal. This goal weight is lower than your current weight.",
@@ -95,10 +106,13 @@ const SetWeightGoalScreen = () => {
           );
           return;
         }
+        setUserInfo("goalWeight", weightGoal);
+        setUserInfo("weeklyGoal", selected);
+        navigation.navigate("nameScreen");
+      } else {
+        console.log("Invalid type. The goal is neither gain weight nor loose weight.")
+        Toast.show("Internal error")
       }
-      setUserInfo("goalWeight", weightGoal);
-      setUserInfo("weeklyGoal", selected);
-      navigation.navigate("nameScreen");
     }
   };
 
@@ -164,7 +178,7 @@ const SetWeightGoalScreen = () => {
                     styles.weeklyWeightoptionText,
                     {
                       backgroundColor: selected === item ? "#d05b19" : "white",
-                      borderWidth: selected === item ? null : 1,
+                      // borderWidth: selected === item ? null : 1,
                     },
                   ]}
                   onPress={() => handleGoalSelection(item)}
@@ -182,7 +196,7 @@ const SetWeightGoalScreen = () => {
                     styles.weeklyWeightoptionText,
                     {
                       backgroundColor: selected === item ? "#d05b19" : "white",
-                      borderWidth: selected === item ? null : 1,
+                      // borderWidth: selected === item ? null : 1,
                     },
                   ]}
                   onPress={() => handleGoalSelection(item)}
@@ -270,20 +284,20 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     fontWeight: "600",
     fontSize: 18,
+    overflow:"hidden"
   },
   weeklyGoalList: {
     marginBottom: 20,
   },
   nextButtonContainer: {
+
     padding: 15,
     borderRadius: 40,
     alignItems: "center",
     justifyContent: "center",
+    marginTop: "auto",
+    marginBottom: 20,
     backgroundColor: "#d05b19",
-    position: "absolute",
-    bottom: 20,
-    right: 10,
-    left: 10,
   },
   nextButtonText: {
     fontSize: 22,

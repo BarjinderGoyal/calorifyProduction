@@ -41,6 +41,8 @@ const NameScreen = () => {
   const navigation = useNavigation();
   const [name, setName] = useState(null);
 
+  console.log("user inside name screen",user)
+
   const handleNext = async () => {
     if (name !== null) {
       setUserInfo("userName", name);
@@ -69,13 +71,11 @@ const NameScreen = () => {
         handleUserDetail(response?.data?.data);
         setLoading(false);
         await AsyncStorage.setItem("uid", JSON.stringify(user?.uid));
-        navigation.navigate("customPlanScreen", {
-          dailyCalorieValue: dailyCalorieValue,
-        });
+        navigation.navigate("mainScreen");
       } else {
         // await AsyncStorage.removeItem("uid");
         setLoading(false);
-
+        console.log('response of the create account',response)
         Toast.show("Something went wrong", Toast.LONG);
 
         navigation.navigate("signupScreen");

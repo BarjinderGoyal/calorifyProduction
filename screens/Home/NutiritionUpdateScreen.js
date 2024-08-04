@@ -9,9 +9,11 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from "react-native";
+import Toast from 'react-native-simple-toast'
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "react-native-vector-icons";
 import { useMealsContext } from "../../Context/MealsContext";
+import { te } from "date-fns/locale";
 
 const NutritionUpdateScreen = ({ navigation, route }) => {
   const { data, index } = route.params;
@@ -25,22 +27,47 @@ const NutritionUpdateScreen = ({ navigation, route }) => {
   });
 
   const handleUpdate = useCallback(() => {
+    const isCalorieNumeric = /^[0-9]*\.?[0-9]+$/.test(values.calories);
+    const isProteinNumeric =/^[0-9]*\.?[0-9]+$/.test(values.protein)
+    const isFatNumeric = /^[0-9]*\.?[0-9]+$/.test(values.fat)
+    const isCarbsNumeric= /^[0-9]*\.?[0-9]+$/.test(values.carbs)
+    const isQuantityNumeric =/^[0-9]*\.?[0-9]+$/.test(values.quantity)
+    if(!isCalorieNumeric || !isProteinNumeric || !isFatNumeric || !isCarbsNumeric || !isQuantityNumeric){
+      Toast.show('Values is incorrect',Toast.SORT)
+      return
+    }
+
+    const calCalories = checkNumberIsInteger(
+      (Number(values.calories) / Number(values.quantity)) 
+    );
+    const calFat = checkNumberIsInteger(
+      (Number(values.fat) / Number(values.quantity))
+    );
+    const calProtein = checkNumberIsInteger(
+      (Number(values.protein) / Number(values.quantity)) 
+    );
+    const calCarbs = checkNumberIsInteger(
+      (Number(values.carbs) / Number(values.quantity)) 
+    );
+
+
+
     const calories =
       Number(mealInfo?.calories) -
       Number(mealInfo?.ingredients[index]?.calories) +
-      Number(values.calories);
+      Number(calCalories);
     const protein =
       Number(mealInfo?.protein) -
       Number(mealInfo?.ingredients[index]?.protein) +
-      Number(values.protein);
+      Number(calProtein);
     const fat =
       Number(mealInfo?.fat) -
       Number(mealInfo?.ingredients[index]?.fat) +
-      Number(values.fat);
+      Number(calFat);
     const carbs =
       Number(mealInfo?.carbs) -
       Number(mealInfo?.ingredients[index]?.carbs) +
-      Number(values.carbs);
+      Number(calCarbs);
     const itemQuanity =
       Number(mealInfo?.quantity[0]) -
       Number(mealInfo?.ingredients[index]?.quantity[0]) +
@@ -79,6 +106,11 @@ const NutritionUpdateScreen = ({ navigation, route }) => {
   const checkNumberIsInteger = (number) => {
     return Number.isInteger(number) ? number : number.toFixed(2);
   };
+
+  const convertToNumber = (text) => {
+    console.log("mim", text, Number(text), checkNumberIsInteger(text))
+    return isNaN(Number(text)) ?  0 : (checkNumberIsInteger(Number(text)));
+  }
 
   const handleQuantity = useCallback(
     (text) => {
@@ -143,7 +175,7 @@ const NutritionUpdateScreen = ({ navigation, route }) => {
               style={styles.input}
               value={String(values.calories)}
               onChangeText={(text) =>
-                setValues({ ...values, calories: Number(text) })
+                setValues({ ...values, calories: (text) })
               }
               keyboardType="numeric"
             />
@@ -154,7 +186,7 @@ const NutritionUpdateScreen = ({ navigation, route }) => {
               style={styles.input}
               value={String(values.protein)}
               onChangeText={(text) =>
-                setValues({ ...values, protein: Number(text) })
+                setValues({ ...values, protein: (text) })
               }
               keyboardType="numeric"
             />
@@ -165,7 +197,7 @@ const NutritionUpdateScreen = ({ navigation, route }) => {
               style={styles.input}
               value={String(values.fat)}
               onChangeText={(text) =>
-                setValues({ ...values, fat: Number(text) })
+                setValues({ ...values, fat: (text) })
               }
               keyboardType="numeric"
             />
@@ -176,7 +208,7 @@ const NutritionUpdateScreen = ({ navigation, route }) => {
               style={styles.input}
               value={String(values.carbs)}
               onChangeText={(text) =>
-                setValues({ ...values, carbs: Number(text) })
+                setValues({ ...values, carbs: (text) })
               }
               keyboardType="numeric"
             />
@@ -186,7 +218,7 @@ const NutritionUpdateScreen = ({ navigation, route }) => {
             <TextInput
               style={styles.input}
               value={values.quantity}
-              onChangeText={(text) => handleQuantity(text)}
+              onChangeText={(text) => setValues({ ...values, quantity: (text) })}
               keyboardType="numeric"
             />
           </View>

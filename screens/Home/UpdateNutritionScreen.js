@@ -73,7 +73,7 @@ const UpdateNutritionScreen = ({ route }) => {
           <Text style={styles.subHeading}>
             please describe the food item and its quantity
           </Text>
-          <TextInput
+          {/* <TextInput
             value={searchedQuery}
             onChangeText={(text) => setSearchedQuery(text)}
             placeholder={
@@ -82,7 +82,23 @@ const UpdateNutritionScreen = ({ route }) => {
             placeholderTextColor={"lightgrey"}
             style={styles.input}
             multiline
-          />
+          /> */}
+                    <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              width: "100%",
+            }}
+          >
+            <TextInput
+              value={searchedQuery}
+              onChangeText={(text) => setSearchedQuery(text)}
+              placeholder="Examples: 250 ml milk, 2 whole beat breads, 1 egg, 1 slice of pizza, 1 burger"
+              placeholderTextColor={"lightgrey"}
+              style={styles.input}
+              multiline
+            />
+          </View>
           <TouchableOpacity
             style={styles.submitButtonContainer}
             onPress={updateIngredients}
@@ -119,11 +135,19 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   input: {
+    // padding: 10,
+    // borderRadius: 20,
+    // backgroundColor: "white",
+    // fontSize: 14,
+    // color: "black",
     padding: 10,
     borderRadius: 20,
     backgroundColor: "white",
     fontSize: 14,
     color: "black",
+    width: "100%", // Ensure full width within the parent container
+    flexGrow: 1, // Allow it to grow within a flex container
+    textAlignVertical: "top",
   },
   submitButtonContainer: {
     justifyContent: "center",
@@ -143,5 +167,6 @@ const styles = StyleSheet.create({
     gap: 15,
     alignItems: "center",
     marginTop: 15,
+    width:"100%"
   },
 });
