@@ -46,7 +46,13 @@ export const saveFood = asyncHandler(async (req, res, next) => {
 
   const populatedSavedFoodDoc = await SavedFood.findById(
     savedFoodDoc._id
-  ).populate("food");
+  ).populate({
+    path: "food",
+    populate: {
+      path: "items",
+      model: "Item", // Adjust based on your model name
+    },
+  });
 
   res
     .status(201)
@@ -93,7 +99,13 @@ export const deleteFoodFromSavedFood = asyncHandler(async (req, res, next) => {
 
   const populatedSavedFoodDoc = await SavedFood.findById(
     savedFoodDoc._id
-  ).populate("food");
+  ).populate({
+    path: "food",
+    populate: {
+      path: "items",
+      model: "Item", // Adjust based on your model name
+    },
+  });
 
   res
     .status(200)
@@ -119,10 +131,13 @@ export const getSavedFood = asyncHandler(async (req, res, next) => {
     throw new ApiError(400, "User does not exist");
   }
 
-  const savedFoodDoc = await SavedFood.findOne({ user: user._id }).populate(
-    "food"
-  );
-
+  const savedFoodDoc = await SavedFood.findOne({ user: user._id }).populate({
+    path: "food",
+    populate: {
+      path: "items",
+      model: "Item", // Adjust based on your model name
+    },
+  });
   res.status(200).json(
     new ApiResponse(
       200,

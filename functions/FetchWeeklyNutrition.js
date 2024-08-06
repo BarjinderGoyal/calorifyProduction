@@ -7,7 +7,7 @@ export const getWeeklyNutritionValues = async (uid) => {
     const endOfTodayDate = endOfToday();
 
     const response = await axios.get(
-      "http://calorify.us-east-1.elasticbeanstalk.com/api/v1/meal/getWeeklyNutritions",
+      "http://192.168.31.209:8000/api/v1/meal/getWeeklyNutritions",
       {
         params: {
           uid,

@@ -10,21 +10,12 @@ import { useNavigation } from "@react-navigation/native";
 import { useMealsContext } from "../../Context/MealsContext";
 import Superwall from "@superwall/react-native-superwall";
 import { bottomSheetUseContext } from "../../Context/BottomSheetContext";
+import { userAuthUseContext } from "../../Context/UserAuthContext";
 
 const placeholderImage = require("../../assets/placeholder.png");
 
 const RenderFoodItem = React.memo(({ item, date, meal, index }) => {
-  console.log(item, date, meal, index);
   const navigation = useNavigation();
-  let imageSource = "";
-  if (item?.image === "") {
-    if (meal === "breakfast" || meal === "snack") {
-      imageSource = breakfastIcon;
-    } else {
-      imageSource = lunchIcon;
-    }
-  }
-
   if (meal === "exercise") {
     return (
       <View style={styles.exerciseItemContainer}>
@@ -36,7 +27,7 @@ const RenderFoodItem = React.memo(({ item, date, meal, index }) => {
           {item?.name}
         </Text>
         <Text style={styles.exerciseCalorieBurned}>
-          {item?.caloriesBurned} Kcal
+          {Number(item?.caloriesBurned)?.toFixed(2)} Kcal
         </Text>
       </View>
     );
@@ -67,7 +58,9 @@ const RenderFoodItem = React.memo(({ item, date, meal, index }) => {
         >
           {item?.name}
         </Text>
-        <Text style={styles.foodItemCal}>{item?.calories || 0} Kcal </Text>
+        <Text style={styles.foodItemCal}>
+          {Number(item?.calories)?.toFixed(2) || 0} Kcal{" "}
+        </Text>
         <Text style={styles.foodItemMicroNutrient}>
           <Text style={{ color: "#d96e6b" }}>
             P {Number(item?.protein)?.toFixed(2) || 0}g{" "}
@@ -89,12 +82,10 @@ const RenderFoodItem = React.memo(({ item, date, meal, index }) => {
 const Meals = ({ mealName }) => {
   const { meals, fetchTodayMeals, updateSelectedMeal, exercise } =
     useMealsContext();
+  const { userDetail, updateUserFlags, userUid } = userAuthUseContext();
   const { updateBottomSheet } = bottomSheetUseContext();
-  console.log(mealDropDownUseContext(), "use context meal dropdwon");
   const [openedMealName, updateOpenedMealName] = mealDropDownUseContext();
   const navigation = useNavigation();
-
-  console.log("EXERCISE INS THE MEAL OINDEX IS", exercise);
 
   const RenderExercise = useCallback(() => {
     return (
@@ -143,31 +134,68 @@ const Meals = ({ mealName }) => {
     );
   }, [meals, exercise, meals, openedMealName]);
 
-  const handleAddClick = () => {
-    Superwall.shared.register("logMeal").then(() => {
+  const handleAddClick = async () => {
+    if (userDetail?.hasUsedFreeLogging) {
+      Superwall.shared.register("logMeal").then(() => {
+        if (mealName !== "exercise") {
+          updateSelectedMeal(mealName.toLowerCase());
+          updateBottomSheet(true);
+        } else {
+          navigation.navigate("searchScreen", {
+            previousScreen: "exercise",
+          });
+        }
+      });
+    } else {
       if (mealName !== "exercise") {
         updateSelectedMeal(mealName.toLowerCase());
         updateBottomSheet(true);
+        await updateUserFlags({ uid: userUid, hasUsedFreeLogging: true });
       } else {
         navigation.navigate("searchScreen", {
           previousScreen: "exercise",
         });
       }
-    });
-
-    // navigation.navigate("cameraScreen", {
-    //   previousScreen: "camera",
-    // });
-
-    // if (mealName !== "exercise") {
-    //   updateSelectedMeal(mealName.toLowerCase());
-    //   updateBottomSheet(true);
-    // } else {
-    //   navigation.navigate("searchScreen", {
-    //     previousScreen: "exercise",
-    //   });
-    // }
+    }
   };
+
+  // const handleAddClick = async () => {
+  //   if (userDetail?.hasUsedFreeLogging) {
+  //     try {
+  //       // Register the paywall event and wait for the response
+  //       const result = await Superwall.shared.register("logMeal");
+
+  //       // Handle paywall interaction based on result
+  //       if (result === "purchased" || result === "restored") {
+  //         // User has successfully subscribed, proceed with the action
+  //         if (mealName !== "exercise") {
+  //           updateSelectedMeal(mealName.toLowerCase());
+  //           updateBottomSheet(true);
+  //         } else {
+  //           navigation.navigate("searchScreen", {
+  //             previousScreen: "exercise",
+  //           });
+  //         }
+  //       } else {
+  //         // User declined the paywall, handle accordingly
+  //         console.log("Paywall declined");
+  //       }
+  //     } catch (error) {
+  //       console.error("Error handling paywall:", error);
+  //     }
+  //   } else {
+  //     // First time free logging logic
+  //     if (mealName !== "exercise") {
+  //       updateSelectedMeal(mealName.toLowerCase());
+  //       updateBottomSheet(true);
+  //       await updateUserFlags({ uid: userUid, hasUsedFreeLogging: true });
+  //     } else {
+  //       navigation.navigate("searchScreen", {
+  //         previousScreen: "exercise",
+  //       });
+  //     }
+  //   }
+  // };
 
   const handleUpArrow = useCallback(() => {
     updateOpenedMealName("");

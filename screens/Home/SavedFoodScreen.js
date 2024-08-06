@@ -110,15 +110,12 @@ const SavedFoodScreen = () => {
   });
 
   const handleLogFood = async () => {
-    console.log(selectedIndex, "sselectedOIndex");
     if (selectedIndex === null) return;
     setLoading(true);
     const foodId = savedFood[selectedIndex]?._id;
-    console.log(foodId, savedFood);
     await fetchFoodFromFoodItemId(foodId);
     setLoading(false);
     navigation.navigate("previewNutrientScreen");
-    // console.log("clicked log");
   };
 
   if (loading) {

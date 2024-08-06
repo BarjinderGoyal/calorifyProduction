@@ -37,12 +37,16 @@ const RenderFoodIngredient = React.memo(({ item, index }) => {
         >
           {item?.name || "Meal"}
         </Text>
-        <Text style={styles.ingredientCalorie}>{item?.calories || 0} kcal</Text>
+        <Text style={styles.ingredientCalorie}>
+          {Number(item?.calories)?.toFixed(2) || 0} kcal
+        </Text>
         <Text style={styles.foodItemMicroNutrient}>
           <Text style={{ color: "#d96e6b" }}>P </Text>
-          {item?.protein || 0}g .<Text style={{ color: "#e09c63" }}> F </Text>
-          {item?.fat || 0}g .<Text style={{ color: "#8aa9ce" }}> C </Text>
-          {item?.carbs || 0}g
+          {Number(item?.protein)?.toFixed(2) || 0}g .
+          <Text style={{ color: "#e09c63" }}> F </Text>
+          {Number(item?.fat)?.toFixed(2) || 0}g .
+          <Text style={{ color: "#8aa9ce" }}> C </Text>
+          {Number(item?.carbs).toFixed(2) || 0}g
         </Text>
       </View>
     </View>
@@ -65,11 +69,6 @@ const SavedMealPreviewScreen = ({ route }) => {
     setLoading(false);
     navigation.goBack();
   }, [foodDetail, userUid, date]);
-
-  console.log(
-    "FOOD DETAILDETAILDETAILDETAILDETAILDETAILDETAILDETAIL",
-    foodDetail
-  );
 
   useEffect(() => {
     const unsubscribe = navigation.addListener("focus", () => {
@@ -178,11 +177,8 @@ const SavedMealPreviewScreen = ({ route }) => {
                 </View>
                 <View style={styles.calorieContainer}>
                   <Text style={styles.calorieHeading}>
-                    Calories: {foodDetail?.calories || 0} Kcal
-                  </Text>
-                  <Text style={styles.servingContainer}>
-                    Serving: {foodDetail?.quantity[0] || 0}{" "}
-                    {foodDetail?.quantity[1]}
+                    Calories: {Number(foodDetail?.calories)?.toFixed(2) || 0}{" "}
+                    Kcal
                   </Text>
                 </View>
                 <View style={styles.nutrientDetailContainer}>
@@ -206,10 +202,10 @@ const SavedMealPreviewScreen = ({ route }) => {
                   </Text>
                 </View>
               </View>
-              {foodDetail?.ingredients?.length >= 1 && (
-                <Text style={styles.ingredientHeading}>Ingredients</Text>
+              {foodDetail?.items?.length >= 1 && (
+                <Text style={styles.ingredientHeading}>Items</Text>
               )}
-              {foodDetail?.ingredients?.map((item, index) => (
+              {foodDetail?.items?.map((item, index) => (
                 <RenderFoodIngredient item={item} index={index} key={index} />
               ))}
             </BottomSheetScrollView>
@@ -282,11 +278,6 @@ const styles = StyleSheet.create({
   calorieHeading: {
     fontSize: 20,
     fontWeight: "bold",
-    color: "black",
-  },
-  servingContainer: {
-    fontSize: 16,
-
     color: "black",
   },
   nutrientDetail: {

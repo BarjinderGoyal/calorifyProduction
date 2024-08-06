@@ -1,11 +1,8 @@
 import {
   Dimensions,
-  Platform,
   StyleSheet,
   Text,
-  ToastAndroid,
   View,
-  Button,
   Pressable,
   TouchableOpacity,
 } from "react-native";
@@ -30,7 +27,6 @@ const CameraScreen = ({ route }) => {
   const [imageUrl, setImageUrl] = useState(null);
   const navigation = useNavigation();
   const cameraRef = useRef();
-  // const { previousScreen } = route.params;
 
   useEffect(() => {
     const unsubscribe = navigation.addListener("focus", () => {

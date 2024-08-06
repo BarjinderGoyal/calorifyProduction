@@ -28,8 +28,10 @@ const Screens = () => {
           fetchExercises(userUid),
           getMySavedFood(userUid),
         ]);
+        setLoading(false);
       } catch (error) {
         console.error("Error fetching data: ", error);
+        setLoading(false);
         // Handle error appropriately, e.g., show a toast or alert
       }
     }

@@ -6,6 +6,7 @@ import {
   textToNutritions,
   updateIngredient,
   textToExercise,
+  updateIngredientAfterDeletion,
 } from "../Prompts.js";
 import axios from "axios";
 import { uploadOnCloudinary } from "../utils/Cloudinary.js";
@@ -40,6 +41,8 @@ export const fetchNutritonFromImage = asyncHandler(async (req, res, next) => {
     throw new ApiError(400, "Invalid image");
   }
 
+  console.log(nutritionInfo, "nutrition info");
+
   res
     .status(200)
     .json(
@@ -72,6 +75,8 @@ export const fetchNutritonFromTextDetail = asyncHandler(
 
     const nutritionInfo = jsonResponse.choices[0].message.content;
 
+    console.log(nutritionInfo, "nutrition info");
+
     res
       .status(200)
       .json(
@@ -102,13 +107,46 @@ export const updateIngredients = asyncHandler(async (req, res, next) => {
   const jsonResponse = response.data;
 
   const nutritionInfo = jsonResponse.choices[0].message.content;
-
+  console.log(nutritionInfo, "nutrition info");
   res
     .status(200)
     .json(
       new ApiResponse(200, nutritionInfo, "Nutrition updated successfully")
     );
 });
+
+export const updateIngredientsAfterDeletion = asyncHandler(
+  async (req, res, next) => {
+    const { updatedFoodItem } = req.body;
+
+    if (!updatedFoodItem) {
+      throw new ApiError("Updated food item is missing");
+    }
+
+    const params = updateIngredientAfterDeletion(model, updatedFoodItem);
+
+    const response = await axios.post(url, params, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${process.env.OPENAI_SECRET_KEY}`,
+      },
+    });
+
+    const jsonResponse = response.data;
+
+    const nutritionInfo = jsonResponse.choices[0].message.content;
+    console.log(nutritionInfo, "nutrition info");
+    res
+      .status(200)
+      .json(
+        new ApiResponse(
+          200,
+          nutritionInfo,
+          "Nutrition updated successfully after deletion"
+        )
+      );
+  }
+);
 
 export const fetchExerciseData = asyncHandler(async (req, res, next) => {
   const { exerciseDetails } = req.body;

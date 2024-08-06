@@ -7,6 +7,7 @@ import {
   TextInput,
 } from "react-native";
 import React, { useState } from "react";
+import Toast from "react-native-simple-toast";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "react-native-vector-icons";
 import { useNavigation } from "@react-navigation/native";
@@ -23,9 +24,12 @@ const AgeScreen = () => {
   const [age, setAge] = useState(null);
 
   const handleNext = () => {
-    if (age !== null) {
+    const isNumeric = /^[0-9]+$/.test(age);
+    if (age !== null && isNumeric) {
       setUserInfo("age", age);
       navigation.navigate("heightScreen");
+    } else {
+      Toast.show("Age is Invalid", Toast.SHORT);
     }
   };
 

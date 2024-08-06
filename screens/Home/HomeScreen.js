@@ -6,15 +6,13 @@ import {
   Text,
   View,
   Pressable,
-  TouchableOpacity,
-  Alert,
   BackHandler,
+  Alert,
 } from "react-native";
 import React, { useEffect, useRef, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import CircularProgressBar from "../../components/CircularProgressBar";
-import Meals from "../../components/Meals";
-import { Ionicons } from "react-native-vector-icons";
+
 import {
   format,
   startOfMonth,
@@ -22,7 +20,12 @@ import {
   eachDayOfInterval,
   isToday,
   parseISO,
+  isBefore,
+  startOfDay,
 } from "date-fns";
+
+import Toast from "react-native-simple-toast";
+import { useNavigationState } from "@react-navigation/native";
 
 import MealDropDownContext from "../../Context/MealDropDownContext";
 import { useNavigation } from "@react-navigation/native";
@@ -31,6 +34,7 @@ import { userAuthUseContext } from "../../Context/UserAuthContext";
 import { Superwall } from "@superwall/react-native-superwall";
 import LogMealBottomSheet from "../../components/Meals/LogMealBottomSheet";
 import { bottomSheetUseContext } from "../../Context/BottomSheetContext";
+import Meals from "../../components/Meals";
 
 const { width } = Dimensions.get("window");
 
@@ -45,27 +49,7 @@ const HomeScreen = () => {
   const dates = eachDayOfInterval({ start, end });
   const flatListRef = useRef(null);
   const [selectedDate, setSelectedDate] = useState(null);
-
-  // useEffect(() => {
-  //   const backAction = () => {
-  //     Alert.alert("Hold on!", "Are you sure you want to exit the app?", [
-  //       {
-  //         text: "Cancel",
-  //         onPress: () => null,
-  //         style: "cancel",
-  //       },
-  //       { text: "YES", onPress: () => BackHandler.exitApp() },
-  //     ]);
-  //     return true;
-  //   };
-
-  //   const backHandler = BackHandler.addEventListener(
-  //     "hardwareBackPress",
-  //     backAction
-  //   );
-
-  //   return () => backHandler.remove();
-  // }, []);
+  const navState = useNavigationState((state) => state);
 
   useEffect(() => {
     const todayIndex = dates.findIndex((date) => isToday(date));
@@ -75,7 +59,32 @@ const HomeScreen = () => {
         animated: true,
       });
     }
-  }, []); // Empty dependency array ensures this runs only once when the component mounts
+  }, []);
+
+  console.log("navigation index is ", navState.index);
+
+  useEffect(() => {
+    const backAction = () => {
+      if (navState.index === 0) {
+        Alert.alert("Hold on!", "Are you sure you want to exit the app?", [
+          {
+            text: "Cancel",
+            onPress: () => null,
+            style: "cancel",
+          },
+          { text: "YES", onPress: () => BackHandler.exitApp() },
+        ]);
+      }
+      return true;
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      backAction
+    );
+
+    return () => backHandler.remove();
+  }, [navigation]);
 
   const RenderDate = React.memo(({ item }) => {
     const isSelected =
@@ -84,15 +93,24 @@ const HomeScreen = () => {
       !isToday(item);
 
     const handlePress = (date) => {
-      const day = format(date, "d");
-      const month = format(date, "M");
-      const year = format(date, "yyyy");
-      navigation.navigate("previousDateReportScreen", {
-        day,
-        month: month - 1,
-        year,
-      });
-      console.log(date);
+      const today = startOfDay(new Date());
+      const selectedDate = startOfDay(date);
+
+      if (isBefore(selectedDate, today)) {
+        const day = format(date, "d");
+        const month = format(date, "M");
+        const year = format(date, "yyyy");
+
+        navigation.navigate("previousDateReportScreen", {
+          day,
+          month: month - 1,
+          year,
+        });
+        console.log(date);
+      } else {
+        Toast.show("Meal is not logged yet", Toast.SHORT);
+      }
+
       setSelectedDate(null);
     };
 
@@ -200,13 +218,13 @@ const HomeScreen = () => {
                         Exercise:{" "}
                       </Text>
                       <Text style={styles.calorieBurnedNumber}>
-                        {calorieBurned || 0}
+                        {Number(calorieBurned)?.toFixed(2) || 0}
                       </Text>
                     </View>
                     <View style={styles.consumedClaorieContainer}>
                       <Text style={styles.calorieBurnedHeading}>Food: </Text>
                       <Text style={styles.calorieConsumedNumber}>
-                        {calculatedNutrition?.calorie || 0}
+                        {Number(calculatedNutrition?.calorie)?.toFixed(2) || 0}
                       </Text>
                     </View>
                   </View>
@@ -221,9 +239,11 @@ const HomeScreen = () => {
                         <Text
                           style={[styles.leftCalorieText, { color: "#BEC6A0" }]}
                         >
-                          {userDetail?.dailyCalorieValue?.toFixed(0) -
-                            calculatedNutrition?.calorie +
-                            calorieBurned}
+                          {Number(
+                            userDetail?.dailyCalorieValue?.toFixed(0) -
+                              calculatedNutrition?.calorie +
+                              calorieBurned
+                          )?.toFixed(0)}
                         </Text>
                         <Text style={styles.leftCalorieHeading}>
                           Calorie Left
@@ -234,11 +254,13 @@ const HomeScreen = () => {
                         <Text
                           style={[styles.leftCalorieText, { color: "#C63C51" }]}
                         >
-                          {Math.abs(
-                            userDetail?.dailyCalorieValue?.toFixed(0) -
-                              calculatedNutrition?.calorie +
-                              calorieBurned
-                          )}
+                          {Number(
+                            Math.abs(
+                              userDetail?.dailyCalorieValue?.toFixed(0) -
+                                calculatedNutrition?.calorie +
+                                calorieBurned
+                            )
+                          )?.toFixed(0)}
                         </Text>
                         <Text
                           style={[
@@ -286,7 +308,7 @@ const HomeScreen = () => {
                     />
                     <Text style={styles.nutrientDetail}>
                       {/* {calculatedNutrition?.protein} /{" "} */}
-                      {userDailyMacroValue?.protein || 250}g
+                      {Number(userDailyMacroValue?.protein).toFixed(2) || 250}g
                     </Text>
                   </View>
                   <View style={styles.nutrientContainer}>
@@ -301,7 +323,7 @@ const HomeScreen = () => {
                     />
                     <Text style={styles.nutrientDetail}>
                       {/* {calculatedNutrition?.fat} /{" "} */}
-                      {userDailyMacroValue?.fat || 250}g
+                      {Number(userDailyMacroValue?.fat)?.toFixed(2) || 250}g
                     </Text>
                   </View>
                   <View style={styles.nutrientContainer}>
@@ -316,7 +338,7 @@ const HomeScreen = () => {
                     />
                     <Text style={styles.nutrientDetail}>
                       {/* {calculatedNutrition?.carbs} /{" "} */}
-                      {userDailyMacroValue?.carbs || 250}g
+                      {Number(userDailyMacroValue?.carbs).toFixed(2) || 250}g
                     </Text>
                   </View>
                 </View>

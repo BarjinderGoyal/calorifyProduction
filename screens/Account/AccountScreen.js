@@ -1,12 +1,4 @@
-import {
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-  Pressable,
-  Image,
-} from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View, Image } from "react-native";
 import React, { useCallback, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -25,7 +17,7 @@ const AccountScreen = () => {
     { heading: "Height", value: `${userDetail?.height} cm` },
     {
       heading: "Calorie Goal",
-      value: `${userDetail?.dailyCalorieValue.toFixed(0)} cal`,
+      value: `${userDetail?.dailyCalorieValue.toFixed(0)} Kcal`,
     },
     { heading: "Email", value: `${userDetail?.email}` },
   ]);
@@ -43,57 +35,35 @@ const AccountScreen = () => {
   const navigation = useNavigation();
 
   const RenderOptions = useCallback(({ item, index }) => {
-    const handleNavigation = () => {
-      if (item.heading !== "Email") {
-        navigation.navigate("accountUpdateScreen", {
-          heading: item.heading,
-          value: item.value,
-        });
-      }
-    };
     return (
-      <View
-        // onPress={handleNavigation}
-        style={styles.middleContainerOptions}
-      >
+      <View style={styles.middleContainerOptions}>
         <View style={styles.middleInnerContainerOptions}>
           <Text style={styles.middleContainerOptionName}>{item.heading}</Text>
           <Text style={styles.middleContainerOptionValue}>{item.value}</Text>
         </View>
-        {/* {item.heading !== "Email" && (
-          <Ionicons name="chevron-forward" size={30} color="black" />
-        )} */}
       </View>
     );
   });
 
   return (
     <View style={styles.container}>
-      <ScrollView showsVerticalScrollIndicator={false}>
-        <SafeAreaView style={styles.innerContainer}>
-          <View style={styles.topContainer}>
-            {/* <Ionicons name="person" size={60} color="black" /> */}
-            <Image source={profileImage} style={styles.profileImage} />
-            <Text style={styles.userName}>{userDetail?.userName}</Text>
-          </View>
-          <View style={styles.middleContainer}>
-            {middleContainerOptions.map((item, index) => {
-              return <RenderOptions item={item} index={index} key={index} />;
-            })}
-          </View>
-          <View style={styles.footerContainer}>
-            <TouchableOpacity
-              style={styles.footerInnerContainer}
-              onPress={handleLogout}
-            >
-              <Text style={styles.footerButtonText}>Logout</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.footerInnerContainer}>
-              <Text style={styles.footerButtonText}>Delete Account</Text>
-            </TouchableOpacity>
-          </View>
-        </SafeAreaView>
-      </ScrollView>
+      <SafeAreaView style={styles.innerContainer}>
+        <View style={styles.topContainer}>
+          <Image source={profileImage} style={styles.profileImage} />
+          <Text style={styles.userName}>{userDetail?.userName}</Text>
+        </View>
+        <View style={styles.middleContainer}>
+          {middleContainerOptions.map((item, index) => {
+            return <RenderOptions item={item} index={index} key={index} />;
+          })}
+        </View>
+        <TouchableOpacity
+          style={styles.footerInnerContainer}
+          onPress={handleLogout}
+        >
+          <Text style={styles.footerButtonText}>Logout</Text>
+        </TouchableOpacity>
+      </SafeAreaView>
     </View>
   );
 };
@@ -134,13 +104,11 @@ const styles = StyleSheet.create({
     gap: 5,
   },
   middleContainerOptionName: {
-    fontSize: 18,
-    fontWeight: "600",
+    fontSize: 16,
     color: "black",
   },
   middleContainerOptionValue: {
     fontSize: 16,
-    fontWeight: "600",
     color: "black",
   },
   footerContainer: {
@@ -150,10 +118,9 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: "lightgrey",
-    // elevation: 2,
   },
   footerInnerContainer: {
-    padding: 10,
+    padding: 20,
     borderRadius: 20,
     borderWidth: 1,
     borderColor: "lightgrey",
@@ -161,6 +128,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     marginBottom: 10,
+    backgroundColor: "white",
   },
   footerButtonText: {
     fontSize: 18,
@@ -176,7 +144,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: "white",
-    // elevation: 2,
   },
   userName: {
     fontSize: 20,

@@ -8,7 +8,6 @@ import Animated, {
   withSequence,
   withTiming,
 } from "react-native-reanimated";
-import { LinearGradient } from "expo-linear-gradient";
 
 const { width, height } = Dimensions.get("window");
 const AREA_HEIGHT = height * 0.6;
@@ -70,14 +69,6 @@ export default function FoodScannerAnimation({ imageUri }) {
         }}
         style={styles.image}
       />
-      {/* <LinearGradient
-        colors={[
-          "rgba(255,255,255,0.1)",
-          "rgba(255,255,255,0.3)",
-          "rgba(255,255,255,0.1)",
-        ]}
-        style={styles.gradientOverlay}
-      /> */}
       <Animated.View style={[styles.container, animatedStyles, opacityStyles]}>
         <View style={styles.row}>
           <View style={[styles.box, styles.rotateY]} />

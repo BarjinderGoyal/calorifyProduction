@@ -37,10 +37,10 @@ const RenderFoodItem = React.memo(({ item, date, meal, index }) => {
       }
       style={styles.foodItem}
     >
-      {item?.image !== "" && item?.image !== undefined ? (
+      {item?.foodImage !== "" && item?.foodImage !== undefined ? (
         <Image
           source={{
-            uri: "https://www.jollibeefoods.com/cdn/shop/files/29351737_2152446668377854_356570745477300982_o_2152446668377854.jpg",
+            uri: item?.foodImage,
           }}
           style={styles.foodImage}
         />
@@ -55,12 +55,16 @@ const RenderFoodItem = React.memo(({ item, date, meal, index }) => {
         >
           {item?.name}
         </Text>
-        <Text style={styles.foodItemCal}>{item?.calories} Kcal </Text>
+        <Text style={styles.foodItemCal}>
+          {Number(item?.calories)?.toFixed(2)} Kcal{" "}
+        </Text>
         <Text style={styles.foodItemMicroNutrient}>
           <Text style={{ color: "#d96e6b" }}>P </Text>
-          {item?.protein}g .<Text style={{ color: "#e09c63" }}> F </Text>
-          {item?.fat}g .<Text style={{ color: "#8aa9ce" }}> C </Text>
-          {item?.carbs}g
+          {Number(item?.protein)?.toFixed(2)}g .
+          <Text style={{ color: "#e09c63" }}> F </Text>
+          {Number(item?.fat)?.toFixed(2)}g .
+          <Text style={{ color: "#8aa9ce" }}> C </Text>
+          {Number(item?.carbs)?.toFixed(2)}g
         </Text>
       </View>
     </Pressable>
@@ -72,12 +76,12 @@ const PreviousDateReportScreen = ({ route }) => {
   const { userUid, userDetail, userDailyMacroValue } = userAuthUseContext();
   const { day, month, year } = route.params;
   const {
+    meals,
     specificDateMeal,
     specificDateNutritions,
     fetchMeals,
     specificDateCalorieBurned,
   } = useMealsContext();
-  console.log(day, month, year);
   const [loading, setLoading] = useState(false);
   const [date, setDate] = useState("");
   const [selectedMeal, setSelectedMeal] = useState("Breakfast");
@@ -106,18 +110,9 @@ const PreviousDateReportScreen = ({ route }) => {
     setLoading(true);
 
     fetchMeal();
-    console.log(`${year}-${month}-${day}`);
     const currentDate = getFormattedDate(day, month, year);
     setDate(currentDate);
   }, []);
-
-  // useEffect(() => {
-  //   if (specificDateMeal === null) {
-  //     setLoading(true);
-  //   } else {
-  //     setLoading(false);
-  //   }
-  // }, [specificDateMeal]);
 
   useEffect(() => {
     const unsubscribe = navigation.addListener("focus", () => {
@@ -170,13 +165,14 @@ const PreviousDateReportScreen = ({ route }) => {
                 <View style={styles.calorieDetailInnerContainer}>
                   <Text style={styles.calorieDetailHeading}>Food: </Text>
                   <Text style={styles.calorieDetailNumber}>
-                    {specificDateNutritions?.calorie || 0} Kcal
+                    {Number(specificDateNutritions?.calorie)?.toFixed(2) || 0}{" "}
+                    Kcal
                   </Text>
                 </View>
                 <View style={styles.calorieDetailInnerContainer}>
                   <Text style={styles.calorieDetailHeading}>Exercise: </Text>
                   <Text style={styles.calorieDetailNumber}>
-                    {specificDateCalorieBurned || 0} Kcal
+                    {Number(specificDateCalorieBurned)?.toFixed(2) || 0} Kcal
                   </Text>
                 </View>
               </View>
@@ -207,7 +203,7 @@ const PreviousDateReportScreen = ({ route }) => {
                 />
                 <Text style={styles.nutrientDetail}>
                   {/* {specificDateNutritions?.protein} /{" "} */}
-                  {userDailyMacroValue?.protein || 250}g
+                  {Number(userDailyMacroValue?.protein)?.toFixed(2) || 250}g
                 </Text>
               </View>
               <View style={styles.nutrientContainer}>
@@ -222,7 +218,7 @@ const PreviousDateReportScreen = ({ route }) => {
                 />
                 <Text style={styles.nutrientDetail}>
                   {/* {specificDateNutritions?.fat} /{" "} */}
-                  {userDailyMacroValue?.fat || 250}g
+                  {Number(userDailyMacroValue?.fat).toFixed(2) || 250}g
                 </Text>
               </View>
               <View style={styles.nutrientContainer}>
@@ -237,7 +233,7 @@ const PreviousDateReportScreen = ({ route }) => {
                 />
                 <Text style={styles.nutrientDetail}>
                   {/* {specificDateNutritions?.carbs} /{" "} */}
-                  {userDailyMacroValue?.carbs || 250}g
+                  {Number(userDailyMacroValue?.carbs).toFixed(2) || 250}g
                 </Text>
               </View>
             </View>
@@ -245,7 +241,6 @@ const PreviousDateReportScreen = ({ route }) => {
           <View style={styles.mealParentContainer}>
             <View style={styles.mealNameContainer}>
               {mealNames.map((item, index) => {
-                console.log(item);
                 return (
                   <Text
                     style={[
@@ -321,6 +316,7 @@ const styles = StyleSheet.create({
     borderColor: "lightgrey",
     // elevation: 2,
     backgroundColor: "white",
+    overflow: "hidden",
   },
   mealName: {
     fontSize: 16,
@@ -328,6 +324,7 @@ const styles = StyleSheet.create({
     color: "black",
     padding: 10,
     borderRadius: 20,
+    overflow: "hidden",
   },
   mealContainer: {
     paddingHorizontal: 10,

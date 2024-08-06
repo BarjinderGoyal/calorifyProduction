@@ -73,7 +73,6 @@ const SearchScreen = ({ route }) => {
           return;
         }
         await fetchNutritionsFromFoodDetail(searchedQuery);
-        console.log(mealInfo);
         if (mealInfo) {
           navigation.navigate("previewNutrientScreen", {
             foodUri: "",
@@ -92,10 +91,6 @@ const SearchScreen = ({ route }) => {
     } catch (e) {
       if (Platform.OS === "android") {
         Toast.show("Something went wrong", Toast.LONG);
-        console.log(
-          "ERROR WHILE FETCHING RESULT FROM OPENAI FROM TEXT TO NUTRITIONS  => ",
-          e
-        );
       }
     } finally {
       setSearchedQuery("");
@@ -185,6 +180,7 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     fontSize: 14,
     color: "black",
+    width: "100%",
   },
   submitButtonContainer: {
     justifyContent: "center",

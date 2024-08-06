@@ -3,7 +3,7 @@ import axios from "axios";
 export const fetchFoodDetailFromFoodId = async (foodId) => {
   try {
     const response = await axios.get(
-      "http://calorify.us-east-1.elasticbeanstalk.com/api/v1/meal/getSavedFoodDetail",
+      "http://192.168.31.209:8000/api/v1/meal/getSavedFoodDetail",
       {
         params: {
           foodId,

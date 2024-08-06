@@ -10,7 +10,7 @@ import WeightScreen from "./WeightScreen";
 import SetWeightGoalScreen from "./SetWeightGoalScreen";
 import { NavigationContainer } from "@react-navigation/native";
 import { OnBoardingProvider } from "../Context/OnBoardingContext";
-import CustomPlan from "./CustomPlan";
+
 import ActivityLevelScreen from "./ActivityLevelScreen";
 import NameScreen from "./NameScreen";
 import SplashScreen from "./SplashScreen";
@@ -38,7 +38,6 @@ const OnBoardingScreen = () => {
           component={SetWeightGoalScreen}
         />
         <Stack.Screen name="nameScreen" component={NameScreen} />
-        <Stack.Screen name="customPlanScreen" component={CustomPlan} />
       </Stack.Navigator>
     </OnBoardingProvider>
   );

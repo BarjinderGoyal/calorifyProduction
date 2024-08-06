@@ -9,6 +9,7 @@ import { userAuthUseContext } from "../../Context/UserAuthContext";
 import { useMealsContext } from "../../Context/MealsContext";
 
 const UpdateNutritionScreen = ({ route }) => {
+  const { foodItem, index } = route.params;
   const { userUid } = userAuthUseContext();
   const { updateMealIngredient } = useMealsContext();
   const [searchedQuery, setSearchedQuery] = useState("");
@@ -37,7 +38,7 @@ const UpdateNutritionScreen = ({ route }) => {
 
   const updateIngredients = useCallback(async () => {
     setLoading(true);
-    await updateMealIngredient(searchedQuery);
+    await updateMealIngredient(foodItem, searchedQuery, index);
     setLoading(false);
     navigation.goBack();
   }, [userUid, searchedQuery]);

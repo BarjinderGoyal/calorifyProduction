@@ -46,12 +46,6 @@ const WeightLogScreen = () => {
     if (weightInputRef) {
       weightInputRef?.current.focus();
     }
-
-    // return () => {
-    //   if (weightInputRef) {
-    //     weightInputRef?.current.blur();
-    //   }
-    // };
   }, []);
 
   if (loading) {

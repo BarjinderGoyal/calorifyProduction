@@ -14,6 +14,7 @@ import {
   fetchNutritionsFromImage,
   fetchNutritionsFromText,
   updateIngredient,
+  updateIngredientAfterDeletion,
 } from "../functions/OpenAiFunctions";
 
 import {
@@ -72,10 +73,6 @@ const MealsContext = ({ children }) => {
       if (data !== -1) {
         mealData = data;
       }
-      console.log(
-        "SELECTED MEAL IS SELECTEDMEAL IS SELECTEDMEAL IS SELECTEDMEAL IS SE;EVE",
-        mealData
-      );
       await logFood(uid, selectedMeal, mealData, foodImage).then(
         async (response) => {
           if (response) {
@@ -108,16 +105,10 @@ const MealsContext = ({ children }) => {
   const fetchMeals = async (uid, day = -1, month = -1, year = -1) => {
     try {
       if (day === -1) {
-        console.log("fetchfetchfetchfetchfetchfetchfetcfh");
         const date = format(new Date(), "yyyy-MM-dd");
         await fetchMeal(uid, date).then(async (response) => {
           if (response) setMeals(response);
           // if (!response) return;
-          console.log(
-            "fetchfetchfetchfetchfetchfetchfetcfh-0-0-0-00000000-0-0-0-0-0",
-            response,
-            "respnse"
-          );
           const updatedCalculatedNutritions = calculateNutrition(
             response || {}
           );
@@ -197,10 +188,6 @@ const MealsContext = ({ children }) => {
     totalCount.protein = formatNumber(totalCount.protein);
     totalCount.fat = formatNumber(totalCount.fat);
     totalCount.carbs = formatNumber(totalCount.carbs);
-    console.log(
-      "VALUESINSIDECALCULATENUTRIOTNVALUESINSIDECALCULATENUTRIOTNVALUESINSIDECALCULATENUTRIOTNVALUESINSIDECALCULATENUTRIOTNVALUESINSIDECALCULATENUTRIOTNVALUESINSIDECALCULATENUTRIOTNVALUESINSIDECALCULATENUTRIOTN",
-      totalCount
-    );
     return totalCount;
   };
 
@@ -280,21 +267,13 @@ const MealsContext = ({ children }) => {
     try {
       const response = await getWeeklyNutritionValues(uid);
       if (response) {
-        console.log(
-          "Weekly response of the data isISISISISISISIISSISSIISISISISISISISISISISISISISSISISIISISSISISISISISISISI:",
-          response
-        );
         const formattedData = {
           calories: formatDataForChart(response, "calories"),
           protein: formatDataForChart(response, "protein"),
           fats: formatDataForChart(response, "fats"),
           carbs: formatDataForChart(response, "carbs"),
         };
-        console.log(
-          "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFDFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF",
-          formattedData,
-          Date.now()
-        );
+
         setWeeklyNutritionData(formattedData);
         return formattedData;
       }
@@ -306,20 +285,10 @@ const MealsContext = ({ children }) => {
 
   const updateTodayNutrition = useCallback(
     (calculatedNutrition, weeklyNutritionData) => {
-      console.log(
-        "entryentryentryentryentryentryentryentryentryentryentryentry",
-        calculatedNutrition,
-        weeklyNutritionData
-      );
       const today = new Date();
       const dayFullName = format(today, "EEE");
 
       const updateDayData = (data, key) => {
-        console.log(
-          "insideinsideinsideinsideinsideisinidisisisiddidididdidndinidsniie",
-          weeklyNutritionData,
-          Date.now()
-        );
         return data.map((day) => {
           if (day.label === dayFullName) {
             return { ...day, value: Number(calculatedNutrition[key]) };
@@ -352,48 +321,7 @@ const MealsContext = ({ children }) => {
       if (response?.data?.data) {
         const fetchedRespose = response?.data?.data;
         const parsedResponse = JSON.parse(fetchedRespose);
-        if (parsedResponse?.ingredients.length > 0) {
-          let calories = 0;
-          let fat = 0;
-          let carbs = 0;
-          let protein = 0;
-          let quantity = 0;
-          parsedResponse?.ingredients?.forEach((item) => {
-            console.log(
-              `item is =`,
-              item,
-              "calorie is ",
-              calories,
-              "  fat is   ",
-              fat,
-              "    carbs   is    ",
-              carbs,
-              "     protein is ",
-              protein
-            );
-            calories += Number(item?.calories) || 0;
-            fat += Number(item?.fat) || 0;
-            carbs += Number(item?.carbs) || 0;
-            protein += Number(item?.protein) || 0;
-            if (
-              item?.quantity[1] === "grams" ||
-              item?.quantity[1] === "ml" ||
-              item?.quantity[1] === "g"
-            ) {
-              quantity += Number(item?.quantity[0]) || 0;
-            }
-          });
-          setMealInfo({
-            ...parsedResponse,
-            calories,
-            fat,
-            protein,
-            carbs,
-            quantity: [quantity, parsedResponse?.quantity[1]],
-          });
-        } else {
-          setMealInfo(parsedResponse);
-        }
+        setMealInfo(parsedResponse);
       } else {
         setMealInfo(null);
       }
@@ -412,51 +340,10 @@ const MealsContext = ({ children }) => {
 
       if (response.status === 200 && response.data.success) {
         const { nutritionInfo, foodImage } = response.data.data;
-        console.log(
-          "IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII",
-          nutritionInfo
-        );
-
         let parsedNutritionInfo;
         parsedNutritionInfo = JSON.parse(nutritionInfo);
-        console.log(
-          "IAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII",
-          parsedNutritionInfo
-        );
         setFoodImage(foodImage);
-        if (parsedNutritionInfo?.ingredients.length > 0) {
-          let calories = 0;
-          let fat = 0;
-          let carbs = 0;
-          let protein = 0;
-          let quantity = 0;
-          parsedNutritionInfo?.ingredients?.forEach((item) => {
-            console.log(
-              "foreachfprecachfprecagcafoecfacgavfoecfacfaacoevftcsgcagv"
-            );
-            calories += Number(item?.calories) || 0;
-            fat += Number(item?.fat) || 0;
-            carbs += Number(item?.carbs) || 0;
-            protein += Number(item?.protein) || 0;
-            if (
-              item?.quantity[1] === "grams" ||
-              item?.quantity[1] === "ml" ||
-              item?.quantity[1] === "g"
-            ) {
-              quantity += Number(item?.quantity[0]) || 0;
-            }
-          });
-          setMealInfo({
-            ...parsedNutritionInfo,
-            calories,
-            fat,
-            protein,
-            carbs,
-            quantity: [quantity, parsedNutritionInfo?.quantity[1]],
-          });
-        } else {
-          setMealInfo(parsedNutritionInfo);
-        }
+        setMealInfo(parsedNutritionInfo);
       } else {
         setMealInfo(null);
         setFoodImage("");
@@ -584,59 +471,168 @@ const MealsContext = ({ children }) => {
     setMealInfo(data);
   };
 
-  const deleteFoodIngredient = (index) => {
-    const updatedMealInfo = mealInfo?.ingredients?.filter(
-      (_, i) => i !== index
-    );
-    setMealInfo({ ...mealInfo, ingredients: updatedMealInfo });
-  };
-
   const resetMealInfo = () => {
     setMealInfo(null);
   };
 
-  const updateMealIngredient = async (additionalIngredients) => {
+  const updateMealIngredient = async (
+    foodItem,
+    additionalIngredients,
+    index
+  ) => {
     try {
-      const response = await updateIngredient(mealInfo, additionalIngredients);
+      const response = await updateIngredient(foodItem, additionalIngredients);
       if (response?.data?.data) {
-        const fetchedRespose = response?.data?.data;
-        const parsedResponse = JSON.parse(fetchedRespose);
-        if (parsedResponse?.ingredients.length > 0) {
-          let calories = 0;
-          let fat = 0;
-          let carbs = 0;
-          let protein = 0;
-          let quantity = 0;
-          parsedResponse?.ingredients?.forEach((item) => {
-            calories += Number(item?.calories) || 0;
-            fat += Number(item?.fat) || 0;
-            carbs += Number(item?.carbs) || 0;
-            protein += Number(item?.protein) || 0;
-            if (
-              item?.quantity[1] === "grams" ||
-              item?.quantity[1] === "ml" ||
-              item?.quantity[1] === "g"
-            ) {
-              quantity += Number(item?.quantity[0]) || 0;
-            }
+        const fetchedResponse = response.data.data;
+        const parsedResponse = JSON.parse(fetchedResponse);
+
+        if (parsedResponse) {
+          // Use a callback function to update the state
+          setMealInfo((prevMealInfo) => {
+            const updatedItems = [...prevMealInfo.items];
+            if (!updatedItems[index]) return prevMealInfo;
+
+            const oldItem = updatedItems[index];
+            const newItem = parsedResponse;
+
+            // Calculate new totals
+            const newCalories =
+              Number(prevMealInfo.calories) -
+              Number(oldItem.calories) +
+              Number(newItem.calories);
+            const newProtein =
+              Number(prevMealInfo.protein) -
+              Number(oldItem.protein) +
+              Number(newItem.protein);
+            const newFat =
+              Number(prevMealInfo.fat) -
+              Number(oldItem.fat) +
+              Number(newItem.fat);
+            const newCarbs =
+              Number(prevMealInfo.carbs) -
+              Number(oldItem.carbs) +
+              Number(newItem.carbs);
+
+            // Update the specific item
+            updatedItems[index] = newItem;
+
+            return {
+              ...prevMealInfo,
+              calories: newCalories.toString(),
+              protein: newProtein.toString(),
+              fat: newFat.toString(),
+              carbs: newCarbs.toString(),
+              items: updatedItems,
+            };
           });
-          setMealInfo({
-            ...parsedResponse,
-            calories,
-            fat,
-            protein,
-            carbs,
-            quantity: [quantity, parsedResponse?.quantity[1]],
-          });
-        } else {
-          setMealInfo(parsedResponse);
         }
-      } else {
-        setMealInfo(null);
       }
     } catch (e) {
       Toast.show("Something went wrong", Toast.LONG);
+      console.log(
+        `Error while fetching nutrition information using food detail => ${e}`
+      );
+    }
+  };
 
+  const updateMealAfterIngredientDeletion = async (
+    updatedMeal,
+    index,
+    quantity = -1
+  ) => {
+    try {
+      const response = await updateIngredientAfterDeletion(updatedMeal);
+
+      if (response?.data?.data) {
+        const fetchedResponse = response.data.data;
+        const parsedResponse = JSON.parse(fetchedResponse);
+
+        if (quantity === -1) {
+          // Use a callback function to update the state
+          setMealInfo((prevMealInfo) => {
+            const updatedItems = [...prevMealInfo.items];
+            if (!updatedItems[index]) return prevMealInfo;
+
+            const oldItem = updatedItems[index];
+            const newItem = parsedResponse;
+
+            // Calculate new totals
+            const newCalories =
+              Number(prevMealInfo.calories) -
+              Number(oldItem.calories) +
+              Number(newItem.calories);
+            const newProtein =
+              Number(prevMealInfo.protein) -
+              Number(oldItem.protein) +
+              Number(newItem.protein);
+            const newFat =
+              Number(prevMealInfo.fat) -
+              Number(oldItem.fat) +
+              Number(newItem.fat);
+            const newCarbs =
+              Number(prevMealInfo.carbs) -
+              Number(oldItem.carbs) +
+              Number(newItem.carbs);
+
+            // Update the specific item
+            updatedItems[index] = newItem;
+
+            return {
+              ...prevMealInfo,
+              calories: newCalories.toString(),
+              protein: newProtein.toString(),
+              fat: newFat.toString(),
+              carbs: newCarbs.toString(),
+              items: updatedItems,
+            };
+          });
+        } else {
+          setMealInfo((prevMealInfo) => {
+            const updatedItems = [...prevMealInfo.items];
+            if (!updatedItems[index]) return prevMealInfo;
+
+            const oldItem = updatedItems[index];
+            const newItem = parsedResponse;
+
+            // Calculate new totals
+            const newCalories =
+              Number(prevMealInfo.calories) -
+              Number(oldItem.calories) +
+              (Number(newItem.calories) / Number(newItem.quantity[0])) *
+                Number(quantity);
+            const newProtein =
+              Number(prevMealInfo.protein) -
+              Number(oldItem.protein) +
+              (Number(newItem.protein) / Number(newItem.quantity[0])) *
+                Number(quantity);
+            const newFat =
+              Number(prevMealInfo.fat) -
+              Number(oldItem.fat) +
+              (Number(newItem.fat) / Number(newItem.quantity[0])) *
+                Number(quantity);
+            const newCarbs =
+              Number(prevMealInfo.carbs) -
+              Number(oldItem.carbs) +
+              (Number(newItem.carbs) / Number(newItem.quantity[0])) *
+                Number(quantity);
+
+            // Update the specific item
+            newItem.quantity = [quantity, ...newItem.quantity.slice(1)];
+            updatedItems[index] = newItem;
+
+            return {
+              ...prevMealInfo,
+              calories: newCalories.toString(),
+              protein: newProtein.toString(),
+              fat: newFat.toString(),
+              carbs: newCarbs.toString(),
+              items: updatedItems,
+            };
+          });
+        }
+      }
+    } catch (e) {
+      Toast.show("Something went wrong", Toast.LONG);
       console.log(
         `Error while fetching nutrition information using food detail => ${e}`
       );
@@ -749,9 +745,9 @@ const MealsContext = ({ children }) => {
         fetchNutritionsFromFoodImage,
         fetchExerciseFromDetail,
         updateMealInfo,
-        deleteFoodIngredient,
         resetMealInfo,
         updateMealIngredient,
+        updateMealAfterIngredientDeletion,
         updateExerciseInfo,
         logExercise,
         fetchExercises,

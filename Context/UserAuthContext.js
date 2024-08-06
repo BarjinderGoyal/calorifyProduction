@@ -4,6 +4,7 @@ import { getUserLoggedWeight } from "../functions/GetUserLoggedWeight";
 import { userWeightLog } from "../functions/UserWeightLog";
 import { format } from "date-fns";
 import { dailyMacroIntake } from "../functions/DailyMacroIntake";
+import { updateUserFlagValue } from "../functions/UpdateUserFlagsValue";
 
 const UserAuthCreateContext = createContext();
 
@@ -35,10 +36,6 @@ export default UserAuthContext = ({ children }) => {
       Number(userDetail?.activityLevel),
       userDetail?.goal,
       userDetail?.weeklyGoal
-    );
-    console.log(
-      "DAILY MACRO IS CALCULATED AND THE VALUE IS ,",
-      dailyMacroValue
     );
     const protein = dailyMacroValue?.protein.toFixed(2);
     const fat = dailyMacroValue?.fat.toFixed(2);
@@ -73,6 +70,16 @@ export default UserAuthContext = ({ children }) => {
   const handleUserDetail = (user) => {
     setUserDetail(user);
   };
+
+  const updateUserFlags = async (props) => {
+    try {
+      const response = await updateUserFlagValue(props);
+      setUserDetail(response?.data?.data);
+    } catch (e) {
+      Toast.show("Something went wrong", Toast.SHORT);
+    }
+  };
+
   return (
     <UserAuthCreateContext.Provider
       value={{
@@ -85,6 +92,7 @@ export default UserAuthContext = ({ children }) => {
         weightLog,
         calculateDailyMacroIntake,
         userDailyMacroValue,
+        updateUserFlags,
       }}
     >
       {children}

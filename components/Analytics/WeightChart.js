@@ -4,7 +4,7 @@ import { LineChart as RNLineChart } from "react-native-chart-kit";
 import {
   getFilteredData,
   getXLabels,
-} from "../../../functions/WeightGraphFunctions";
+} from "../../functions/WeightGraphFunctions";
 
 const WeightChart = ({ range, data }) => {
   const days = useMemo(() => {

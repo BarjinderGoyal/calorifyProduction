@@ -1,107 +1,109 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   View,
   Text,
   TextInput,
   StyleSheet,
   TouchableOpacity,
-  ScrollView,
+  FlatList,
   KeyboardAvoidingView,
   Platform,
+  ActivityIndicator,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Ionicons } from "react-native-vector-icons";
+import { Ionicons, Entypo } from "react-native-vector-icons";
 import { useMealsContext } from "../../Context/MealsContext";
 
 const NutritionUpdateScreen = ({ navigation, route }) => {
   const { data, index } = route.params;
-  const { mealInfo, updateMealInfo } = useMealsContext();
-  const [values, setValues] = useState({
-    calories: data?.calories,
-    fat: data?.fat,
-    protein: data?.protein,
-    carbs: data?.carbs,
-    quantity: data?.quantity[0],
-  });
-
-  const handleUpdate = useCallback(() => {
-    const calories =
-      Number(mealInfo?.calories) -
-      Number(mealInfo?.ingredients[index]?.calories) +
-      Number(values.calories);
-    const protein =
-      Number(mealInfo?.protein) -
-      Number(mealInfo?.ingredients[index]?.protein) +
-      Number(values.protein);
-    const fat =
-      Number(mealInfo?.fat) -
-      Number(mealInfo?.ingredients[index]?.fat) +
-      Number(values.fat);
-    const carbs =
-      Number(mealInfo?.carbs) -
-      Number(mealInfo?.ingredients[index]?.carbs) +
-      Number(values.carbs);
-    const itemQuanity =
-      Number(mealInfo?.quantity[0]) -
-      Number(mealInfo?.ingredients[index]?.quantity[0]) +
-      Number(values.quantity);
-
-    const updatedIngredients = mealInfo?.ingredients?.map((item, i) => {
-      if (i !== index) {
-        return item;
-      } else {
-        return {
-          ...item,
-          calories: values.calories,
-          fat: values.fat,
-          protein: values.protein,
-          carbs: values.carbs,
-          quantity: [
-            Number(values.quantity) !== 0 ? Number(values.quantity) : Number(1),
-            item?.quantity[1],
-          ],
-        };
-      }
-    });
-
-    updateMealInfo({
-      ...mealInfo,
-      calories,
-      protein,
-      fat,
-      carbs,
-      quantity: [itemQuanity, mealInfo?.quantity[1]],
-      ingredients: updatedIngredients,
-    });
-    navigation.goBack();
-  }, [navigation, values]);
-
-  const checkNumberIsInteger = (number) => {
-    return Number.isInteger(number) ? number : number.toFixed(2);
-  };
-
-  const handleQuantity = useCallback(
-    (text) => {
-      if (text.length > 4) return;
-      const factor = Number(text) !== 0 ? Number(text) : 1;
-      const calories = checkNumberIsInteger(
-        (Number(values.calories) / Number(values.quantity)) * factor
-      );
-      const fat = checkNumberIsInteger(
-        (Number(values.fat) / Number(values.quantity)) * factor
-      );
-      const protein = checkNumberIsInteger(
-        (Number(values.protein) / Number(values.quantity)) * factor
-      );
-      const carbs = checkNumberIsInteger(
-        (Number(values.carbs) / Number(values.quantity)) * factor
-      );
-      const itemQuantity = Number(text) !== 0 ? Number(text) : 1;
-
-      setValues({ calories, fat, carbs, protein, quantity: itemQuantity });
-    },
-    [values]
+  const { mealInfo, updateMealInfo, updateMealAfterIngredientDeletion } =
+    useMealsContext();
+  const [values, setValues] = useState(data?.quantity[0]);
+  const [localIngredients, setLocalIngredients] = useState(
+    data?.ingredients || []
   );
+  const [loading, setLoading] = useState(false);
+  const isIngredientDeletedRef = useRef(false);
+
+  useEffect(() => {
+    setLocalIngredients(mealInfo?.items[index]?.ingredients);
+  }, [mealInfo]);
+
+  const handleUpdate = useCallback(async () => {
+    if (
+      Number(mealInfo?.items[index]?.quantity[0]) !== Number(values) &&
+      !isIngredientDeletedRef.current
+    ) {
+      updateMealNutrition();
+    } else if (
+      isIngredientDeletedRef.current &&
+      Number(mealInfo?.items[index]?.quantity[0]) === Number(values)
+    ) {
+      const updatedFoodItem = { ...data, ingredients: localIngredients };
+      setLoading(true);
+      await updateMealAfterIngredientDeletion(updatedFoodItem, index);
+      setLoading(false);
+    } else {
+      const updatedFoodItem = { ...data, ingredients: localIngredients };
+      setLoading(true);
+      await updateMealAfterIngredientDeletion(updatedFoodItem, index, values);
+      setLoading(false);
+    }
+
+    navigation.goBack();
+  }, [
+    mealInfo,
+    navigation,
+    values,
+    index,
+    updateMealInfo,
+    localIngredients,
+    isIngredientDeletedRef.current,
+  ]);
+
+  const updateMealNutrition = () => {
+    const updatedCalorie =
+      (Number(mealInfo?.items[index]?.calories) /
+        Number(mealInfo?.items[index]?.quantity[0])) *
+      Number(values);
+    const updatedProtein =
+      (Number(mealInfo?.items[index]?.protein) /
+        Number(mealInfo?.items[index].quantity[0])) *
+      Number(values);
+    const updatedFat =
+      (Number(mealInfo?.items[index]?.fat) /
+        Number(mealInfo?.items[index].quantity[0])) *
+      Number(values);
+    const updatedCarbs =
+      (Number(mealInfo?.items[index]?.carbs) /
+        Number(mealInfo?.items[index].quantity[0])) *
+      Number(values);
+
+    // Spread mealInfo to create a new object
+    let updatedMealInfo = {
+      ...mealInfo,
+      calories:
+        mealInfo.calories - mealInfo?.items[index]?.calories + updatedCalorie,
+      protein:
+        mealInfo.protein - mealInfo?.items[index]?.protein + updatedProtein,
+      fat: mealInfo.fat - mealInfo?.items[index]?.fat + updatedFat,
+      carbs: mealInfo.carbs - mealInfo?.items[index]?.carbs + updatedCarbs,
+      items: mealInfo.items.map((item, i) =>
+        i === index
+          ? {
+              ...item,
+              calories: updatedCalorie,
+              protein: updatedProtein,
+              fat: updatedFat,
+              carbs: updatedCarbs,
+              quantity: [values, ...item.quantity.slice(1)],
+            }
+          : item
+      ),
+    };
+
+    updateMealInfo(updatedMealInfo);
+  };
 
   useEffect(() => {
     const unsubscribe = navigation.addListener("focus", () => {
@@ -117,83 +119,97 @@ const NutritionUpdateScreen = ({ navigation, route }) => {
     return unsubscribe;
   }, [navigation]);
 
+  const handleAddNutrition = useCallback(() => {
+    navigation.navigate("updateNutritionScreen", { foodItem: data, index });
+  }, [data, index, navigation]);
+
+  const handleIngredientDeletion = (index) => {
+    if (!isIngredientDeletedRef.current) {
+      isIngredientDeletedRef.current = true;
+    }
+    const updatedIngredients = localIngredients.filter((item, i) => {
+      if (i !== index) {
+        return item;
+      }
+    });
+
+    setLocalIngredients(updatedIngredients);
+  };
+
+  if (loading) {
+    if (loading) {
+      return (
+        <View
+          style={{
+            flex: 1,
+            backgroundColor: "#f7f8f9",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <ActivityIndicator size={"large"} color="#d05b19" />
+        </View>
+      );
+    }
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={{ flex: 1 }}
       >
-        <ScrollView
-          contentContainerStyle={{ flexGrow: 1 }}
-          showsVerticalScrollIndicator={false}
-        >
-          <View style={styles.header}>
-            <Ionicons
-              name="chevron-back"
-              size={40}
-              color="grey"
-              onPress={() => navigation.goBack()}
-            />
-            {/* <Text style={styles.headerTitle}>Burger</Text> */}
-            {/* <MaterialCommunityIcons name="delete" size={40} color="grey" /> */}
-          </View>
-          <View style={styles.inputContainer}>
-            <Text style={styles.inputLabel}>Calories</Text>
-            <TextInput
-              style={styles.input}
-              value={String(values.calories)}
-              onChangeText={(text) =>
-                setValues({ ...values, calories: Number(text) })
-              }
-              keyboardType="numeric"
-            />
-          </View>
-          <View style={styles.inputContainer}>
-            <Text style={styles.inputLabel}>Protein</Text>
-            <TextInput
-              style={styles.input}
-              value={String(values.protein)}
-              onChangeText={(text) =>
-                setValues({ ...values, protein: Number(text) })
-              }
-              keyboardType="numeric"
-            />
-          </View>
-          <View style={styles.inputContainer}>
-            <Text style={styles.inputLabel}>Fats</Text>
-            <TextInput
-              style={styles.input}
-              value={String(values.fat)}
-              onChangeText={(text) =>
-                setValues({ ...values, fat: Number(text) })
-              }
-              keyboardType="numeric"
-            />
-          </View>
-          <View style={styles.inputContainer}>
-            <Text style={styles.inputLabel}>Carbs</Text>
-            <TextInput
-              style={styles.input}
-              value={String(values.carbs)}
-              onChangeText={(text) =>
-                setValues({ ...values, carbs: Number(text) })
-              }
-              keyboardType="numeric"
-            />
-          </View>
-          <View style={styles.inputContainer}>
-            <Text style={styles.inputLabel}>Serving</Text>
-            <TextInput
-              style={styles.input}
-              value={values.quantity}
-              onChangeText={(text) => handleQuantity(text)}
-              keyboardType="numeric"
-            />
-          </View>
-          <TouchableOpacity style={styles.updateButton} onPress={handleUpdate}>
-            <Text style={styles.updateButtonText}>Update</Text>
+        <View style={styles.header}>
+          <Ionicons
+            name="chevron-back"
+            size={40}
+            color="grey"
+            onPress={() => navigation.goBack()}
+          />
+        </View>
+        <View style={styles.inputContainer}>
+          <Text style={styles.inputLabel}>Serving</Text>
+          <TextInput
+            style={styles.input}
+            value={values}
+            onChangeText={(text) => setValues(text)}
+            keyboardType="numeric"
+          />
+        </View>
+        <View style={styles.ingredientsContainer}>
+          {localIngredients.length > 0 && (
+            <>
+              <Text style={styles.ingredientHeading}>Ingredients</Text>
+              <FlatList
+                data={localIngredients}
+                renderItem={({ item, index }) => (
+                  <View style={styles.ingredientContainer}>
+                    <Text style={styles.ingredient}>{item}</Text>
+                    <Entypo
+                      name="cross"
+                      size={25}
+                      color="grey"
+                      onPress={() => handleIngredientDeletion(index)}
+                    />
+                  </View>
+                )}
+                keyExtractor={(item, i) => `${item}-${i}`}
+                contentContainerStyle={{ gap: 10 }}
+              />
+            </>
+          )}
+        </View>
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity
+            style={styles.fixedButton}
+            onPress={handleAddNutrition}
+          >
+            <Text style={styles.buttonText}>Add ingredient</Text>
           </TouchableOpacity>
-        </ScrollView>
+          <TouchableOpacity style={styles.fixedButton} onPress={handleUpdate}>
+            <Text style={styles.buttonText}>Update</Text>
+          </TouchableOpacity>
+        </View>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
@@ -210,11 +226,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     marginBottom: 20,
-  },
-  headerTitle: {
-    fontSize: 24,
-    fontWeight: "bold",
-    color: "black",
   },
   inputContainer: {
     marginBottom: 20,
@@ -233,17 +244,52 @@ const styles = StyleSheet.create({
     fontSize: 16,
     backgroundColor: "white",
   },
-  updateButton: {
-    marginTop: "auto",
-    backgroundColor: "#d05b19",
-    padding: 15,
-    borderRadius: 20,
-    alignItems: "center",
+  ingredientsContainer: {
+    marginVertical: 15,
+    flex: 1,
   },
-  updateButtonText: {
+  ingredientHeading: {
+    fontSize: 20,
+    fontWeight: "500",
+    color: "black",
+    marginBottom: 15,
+  },
+  ingredientContainer: {
+    padding: 10,
+    borderRadius: 20,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 5,
+    borderWidth: 2,
+    borderColor: "#FAEDCE",
+    backgroundColor: "white",
+  },
+  ingredient: {
+    flex: 1,
+    fontSize: 16,
+    fontWeight: "normal",
+    color: "black",
+  },
+  buttonContainer: {
+    marginTop: "auto",
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 15,
+  },
+  fixedButton: {
+    flex: 0.5,
+    padding: 15,
+    borderWidth: 1,
+    borderColor: "black",
+    borderRadius: 10,
+    alignItems: "center",
+    justifyContent: "center",
+    width: "45%",
+  },
+  buttonText: {
     fontSize: 18,
     fontWeight: "bold",
-    color: "white",
+    color: "black",
   },
 });
 

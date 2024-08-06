@@ -15,7 +15,7 @@ import { userAuthUseContext } from "../../Context/UserAuthContext";
 
 const BarGraph = lazy(() => import("../../components/Analytics/BarGraph"));
 const WeightChart = lazy(() =>
-  import("../../components/Analytics/Graphs/WeightChart")
+  import("../../components/Analytics/WeightChart")
 );
 
 const TabContent = ({ heading, color, data, maxValue }) => {
@@ -52,11 +52,6 @@ const AnalyticsScreen = () => {
   const navigation = useNavigation();
 
   const chartOptions = ["Week", "Month", "6 Months", "Year"];
-
-  console.log(
-    "anaannananaannanananannananaanananananananannanananannanananannannaananananaanaannanananananaa",
-    weeklyNutritionData
-  );
 
   useEffect(() => {
     if (!userLoggedWeight.length && userUid) {
@@ -147,7 +142,7 @@ const AnalyticsScreen = () => {
             {[
               { value: `${currentWeight || 0}Kg`, heading: "Current weight" },
               { value: `${userDetail?.goalWeight}Kg`, heading: "Goal weight" },
-              { value: `${currentBMR.toFixed(2)}`, heading: "Current BMR" },
+              { value: `${currentBMI.toFixed(2)}`, heading: "Current BMI" },
             ].map((item, index) => (
               <View key={index} style={styles.topInnerContainer}>
                 <Text style={styles.value}>{item.value}</Text>
@@ -216,7 +211,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     padding: 10,
     borderRadius: 10,
-    backgroundColor: "#d05b19",
+    backgroundColor: "white", //"#d05b19",
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: "lightgrey",
     marginHorizontal: 20,
@@ -262,6 +257,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     padding: 10,
     textAlign: "center",
+    overflow: "hidden",
   },
   weightChartInnerContainer: {
     backgroundColor: "white",
