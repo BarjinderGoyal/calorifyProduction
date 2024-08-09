@@ -1,6 +1,15 @@
 import express from "express";
+import cors from "cors";
 
 const app = express();
+
+app.use(
+  cors({
+    origin: "*", // or your specific domains
+    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+    credentials: true, // If you need to include credentials like cookies
+  })
+);
 
 app.use(express.json({ limit: "20kb" }));
 
