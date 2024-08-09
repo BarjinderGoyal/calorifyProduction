@@ -1,5 +1,6 @@
 import axios from "axios";
 import { startOfWeek, endOfToday, format } from "date-fns";
+import { BASE_ENDPOINT_URL } from "../Constants";
 
 export const getWeeklyNutritionValues = async (uid) => {
   try {
@@ -7,7 +8,7 @@ export const getWeeklyNutritionValues = async (uid) => {
     const endOfTodayDate = endOfToday();
 
     const response = await axios.get(
-      "http://192.168.31.209:8000/api/v1/meal/getWeeklyNutritions",
+      `${BASE_ENDPOINT_URL}/api/v1/meal/getWeeklyNutritions`,
       {
         params: {
           uid,
@@ -39,7 +40,6 @@ export const getWeeklyNutritionValues = async (uid) => {
           : item?.carbs?.toFixed(2),
       }));
 
-      console.log(formattedData, "Formatted Nutrition Data");
       return formattedData;
     }
   } catch (e) {

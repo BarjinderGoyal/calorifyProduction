@@ -1,9 +1,10 @@
 import axios from "axios";
+import { BASE_ENDPOINT_URL } from "../Constants";
 
 export const updateUserFlagValue = async (props) => {
   try {
     const response = axios.post(
-      "http://192.168.31.209:8000/api/v1/user/updateUserFlags",
+      `${BASE_ENDPOINT_URL}/api/v1/user/updateUserFlags`,
       { ...props }
     );
     if (response) {

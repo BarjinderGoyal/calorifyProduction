@@ -1,15 +1,13 @@
 import axios from "axios";
+import { BASE_ENDPOINT_URL } from "../Constants";
 
 export const getUserFromDatabase = async (uid) => {
   try {
-    const response = axios.get(
-      "http://calorify.us-east-1.elasticbeanstalk.com/api/v1/user/login",
-      {
-        params: {
-          uid,
-        },
-      }
-    );
+    const response = axios.get(`${BASE_ENDPOINT_URL}/api/v1/user/login`, {
+      params: {
+        uid,
+      },
+    });
     if (response) {
       return response;
     } else {

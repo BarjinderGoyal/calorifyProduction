@@ -1,4 +1,5 @@
 import axios from "axios";
+import { BASE_ENDPOINT_URL } from "../Constants";
 
 export const fetchNutritionsFromImage = async (foodImage) => {
   const formData = new FormData();
@@ -8,10 +9,10 @@ export const fetchNutritionsFromImage = async (foodImage) => {
     const type = match ? `image/${match[1]}` : `image`;
     formData.append("foodImage", { uri: foodImage, name: filename, type });
   }
-  console.log("FORMFORMFORMFOFRMOFMFOFFOMFFOFMFOMFOFFFOFFFMFFOF00", formData);
+
   try {
     const response = await axios.post(
-      "http://192.168.31.209:8000/api/v1/openAi/imageNutrition",
+      `${BASE_ENDPOINT_URL}/api/v1/openAi/imageNutrition`,
       formData,
       {
         headers: {
@@ -32,13 +33,12 @@ export const fetchNutritionsFromImage = async (foodImage) => {
 export const fetchNutritionsFromText = async (foodDetails) => {
   try {
     const response = await axios.post(
-      "http://192.168.31.209:8000/api/v1/openAi/textNutrition",
+      `${BASE_ENDPOINT_URL}/api/v1/openAi/textNutrition`,
       {
         foodDetails,
       }
     );
     if (response) {
-      console.log("response of the openai = > ", response);
       return response;
     } else {
       return null;
@@ -51,13 +51,12 @@ export const fetchNutritionsFromText = async (foodDetails) => {
 export const fetchExerciseData = async (exerciseDetails) => {
   try {
     const response = await axios.post(
-      "http://192.168.31.209:8000/api/v1/openAi/exercise",
+      `${BASE_ENDPOINT_URL}/api/v1/openAi/exercise`,
       {
         exerciseDetails,
       }
     );
     if (response) {
-      console.log("response of the openai = > ", response);
       return response;
     } else {
       return null;
@@ -73,13 +72,12 @@ export const updateIngredientAfterDeletion = async (updatedFoodItem) => {
   try {
     //updateIngredient
     const response = await axios.post(
-      "http://192.168.31.209:8000/api/v1/openAi/deletionIngredient",
+      `${BASE_ENDPOINT_URL}/api/v1/openAi/deletionIngredient`,
       {
         updatedFoodItem,
       }
     );
     if (response) {
-      console.log("response updated of the openai = > ", response);
       return response;
     } else {
       return null;
@@ -96,14 +94,13 @@ export const updateIngredient = async (
   try {
     //updateIngredient
     const response = await axios.post(
-      "http://192.168.31.209:8000/api/v1/openAi/updateIngredient",
+      `${BASE_ENDPOINT_URL}/api/v1/openAi/updateIngredient`,
       {
         originalResponse,
         additionalIngredients,
       }
     );
     if (response) {
-      console.log("response updated of the openai = > ", response);
       return response;
     } else {
       return null;

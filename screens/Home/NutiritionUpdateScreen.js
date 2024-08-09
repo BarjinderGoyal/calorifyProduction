@@ -195,6 +195,7 @@ const NutritionUpdateScreen = ({ navigation, route }) => {
                 )}
                 keyExtractor={(item, i) => `${item}-${i}`}
                 contentContainerStyle={{ gap: 10 }}
+                showsVerticalScrollIndicator={false}
               />
             </>
           )}

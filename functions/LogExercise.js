@@ -1,4 +1,5 @@
 import axios from "axios";
+import { BASE_ENDPOINT_URL } from "../Constants";
 
 export const logExerciseToDatabase = async (uid, exercises) => {
   const date = getTodayDate();
@@ -6,7 +7,7 @@ export const logExerciseToDatabase = async (uid, exercises) => {
 
   try {
     const response = await axios.post(
-      "http://calorify.us-east-1.elasticbeanstalk.com/api/v1/exercise/addExercises",
+      `${BASE_ENDPOINT_URL}/api/v1/exercise/addExercises`,
       { uid, exercises, date }
     );
     if (response) {
