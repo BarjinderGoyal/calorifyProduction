@@ -40,7 +40,8 @@ const UpdateNutritionScreen = ({ route }) => {
     setLoading(true);
     await updateMealIngredient(foodItem, searchedQuery, index);
     setLoading(false);
-    navigation.goBack();
+    navigation.navigate('previewNutrientScreen');
+    // navigation.goBack();
   }, [userUid, searchedQuery]);
 
   if (loading) {
@@ -125,6 +126,7 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     fontSize: 14,
     color: "black",
+    width: "100%",
   },
   submitButtonContainer: {
     justifyContent: "center",

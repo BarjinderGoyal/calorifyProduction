@@ -42,13 +42,13 @@ import {
 } from "@env";
 
 const firebaseConfig = {
-  apiKey: `${FIREBASE_API_KEY}`,
-  authDomain: `${FIREBASE_AUTH_DOMAIN}`,
-  projectId: `${FIREBASE_PROJECT_ID}`,
-  storageBucket: `${FIREBASE_STORAGE_BUCKET}`,
-  messagingSenderId: `${FIREBASE_MESAGING_SENDER_ID}`,
-  appId: `${FIREBASE_APP_ID}`,
-  measurementId: `${FIREBASE_MEASUREMENT_ID}`,
+  apiKey: "AIzaSyDAXX2RqYz7vSMz07C7DcL-qNFXqpopjdA",
+  authDomain: "calorify-6de29.firebaseapp.com",
+  projectId: "calorify-6de29",
+  storageBucket: "calorify-6de29.appspot.com",
+  messagingSenderId: "1003689514928",
+  appId: "1:1003689514928:web:7c426b48d0da2fc4612875",
+  measurementId: "G-0QBBS7CG18"
 };
 
 // Initialize Firebase

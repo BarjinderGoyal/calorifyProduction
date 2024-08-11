@@ -461,6 +461,9 @@ const MealsContext = ({ children }) => {
         }
       } else {
         setExercise(null);
+        if (date === -1) {
+          return 0;
+        }
       }
     } catch (e) {
       Toast.show("Something went wrong", Toast.LONG);

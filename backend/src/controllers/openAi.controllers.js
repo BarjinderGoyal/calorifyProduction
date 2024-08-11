@@ -83,6 +83,7 @@ export const fetchNutritonFromTextDetail = asyncHandler(
 
 export const updateIngredients = asyncHandler(async (req, res, next) => {
   const { originalResponse, additionalIngredients } = req.body;
+  console.log("updateIngredients function input ", originalResponse, additionalIngredients)
 
   if (!originalResponse || !additionalIngredients) {
     throw new ApiError("Values is missing");
@@ -103,6 +104,7 @@ export const updateIngredients = asyncHandler(async (req, res, next) => {
   const jsonResponse = response.data;
 
   const nutritionInfo = jsonResponse.choices[0].message.content;
+  console.log("updateIngredients function output", nutritionInfo)
   res
     .status(200)
     .json(
@@ -113,13 +115,13 @@ export const updateIngredients = asyncHandler(async (req, res, next) => {
 export const updateIngredientsAfterDeletion = asyncHandler(
   async (req, res, next) => {
     const { updatedFoodItem } = req.body;
+    console.log("updateIngredientsAfterDeletion input", updatedFoodItem)
 
     if (!updatedFoodItem) {
       throw new ApiError("Updated food item is missing");
     }
 
     const params = updateIngredientAfterDeletion(model, updatedFoodItem);
-
     const response = await axios.post(url, params, {
       headers: {
         "Content-Type": "application/json",
@@ -130,6 +132,7 @@ export const updateIngredientsAfterDeletion = asyncHandler(
     const jsonResponse = response.data;
 
     const nutritionInfo = jsonResponse.choices[0].message.content;
+    console.log("updateIngredientsAfterDeletion output", nutritionInfo)
     res
       .status(200)
       .json(
