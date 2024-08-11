@@ -217,8 +217,8 @@ const appIcon = require("../assets/splashIcon.png");
 const SignupScreen = () => {
   const navigation = useNavigation();
   const [request, response, promptAsync] = Google.useAuthRequest({
-    androidClientId: GOOGLE_SIGNUP_ANDROID_CLIENT_ID,
-    iosClientId: GOOGLE_SIGNUP_IOS_CLIENT_ID,
+    androidClientId: `${GOOGLE_SIGNUP_ANDROID_CLIENT_ID}`,
+    iosClientId: `${GOOGLE_SIGNUP_IOS_CLIENT_ID}`,
 
     expoClientId: "YOUR_EXPO_CLIENT_ID.apps.googleusercontent.com",
     scopes: ["profile", "email"], // Adding scopes to request more info

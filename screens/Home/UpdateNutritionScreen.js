@@ -40,7 +40,7 @@ const UpdateNutritionScreen = ({ route }) => {
     setLoading(true);
     await updateMealIngredient(foodItem, searchedQuery, index);
     setLoading(false);
-    navigation.goBack();
+    navigation.navigate("previewNutrientScreen");
   }, [userUid, searchedQuery]);
 
   if (loading) {

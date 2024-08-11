@@ -410,6 +410,8 @@ export const weeklyNutritionDetail = asyncHandler(async (req, res, next) => {
       return dayNutrition;
     });
 
+    console.log(response);
+
     res.status(200).json(new ApiResponse(200, response));
   } catch (error) {
     next(new ApiError(500, "Internal Server Error"));

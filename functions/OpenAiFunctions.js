@@ -68,14 +68,15 @@ export const fetchExerciseData = async (exerciseDetails) => {
 
 //deletionIngredient
 
-export const updateIngredientAfterDeletion = async (updatedFoodItem) => {
+export const updateIngredientAfterDeletion = async (
+  updatedFoodItem,
+  originalFoodItem
+) => {
   try {
     //updateIngredient
     const response = await axios.post(
       `${BASE_ENDPOINT_URL}/api/v1/openAi/deletionIngredient`,
-      {
-        updatedFoodItem,
-      }
+      { originalFoodItem, updatedFoodItem }
     );
     if (response) {
       return response;

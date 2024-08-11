@@ -41,12 +41,17 @@ const NutritionUpdateScreen = ({ navigation, route }) => {
     ) {
       const updatedFoodItem = { ...data, ingredients: localIngredients };
       setLoading(true);
-      await updateMealAfterIngredientDeletion(updatedFoodItem, index);
+      await updateMealAfterIngredientDeletion(updatedFoodItem, data, index);
       setLoading(false);
     } else {
       const updatedFoodItem = { ...data, ingredients: localIngredients };
       setLoading(true);
-      await updateMealAfterIngredientDeletion(updatedFoodItem, index, values);
+      await updateMealAfterIngredientDeletion(
+        updatedFoodItem,
+        data,
+        index,
+        values
+      );
       setLoading(false);
     }
 

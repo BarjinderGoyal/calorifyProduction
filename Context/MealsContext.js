@@ -275,6 +275,7 @@ const MealsContext = ({ children }) => {
         };
 
         setWeeklyNutritionData(formattedData);
+        console.log("weekly report is  ", formattedData);
         return formattedData;
       }
     } catch (e) {
@@ -453,6 +454,7 @@ const MealsContext = ({ children }) => {
             accumulator + Number(currentValue.caloriesBurned),
           0
         );
+
         if (day === -1) {
           setCalorieBurned(totalBurnedCalorie);
           return totalBurnedCalorie;
@@ -461,6 +463,9 @@ const MealsContext = ({ children }) => {
         }
       } else {
         setExercise(null);
+        if (day === -1) {
+          return 0;
+        }
       }
     } catch (e) {
       Toast.show("Something went wrong", Toast.LONG);
@@ -537,11 +542,15 @@ const MealsContext = ({ children }) => {
 
   const updateMealAfterIngredientDeletion = async (
     updatedMeal,
+    originalMeal,
     index,
     quantity = -1
   ) => {
     try {
-      const response = await updateIngredientAfterDeletion(updatedMeal);
+      const response = await updateIngredientAfterDeletion(
+        updatedMeal,
+        originalMeal
+      );
 
       if (response?.data?.data) {
         const fetchedResponse = response.data.data;

@@ -41,6 +41,8 @@ export const fetchNutritonFromImage = asyncHandler(async (req, res, next) => {
     throw new ApiError(400, "Invalid image");
   }
 
+  console.log(nutritionInfo);
+
   res
     .status(200)
     .json(
@@ -55,7 +57,7 @@ export const fetchNutritonFromImage = asyncHandler(async (req, res, next) => {
 export const fetchNutritonFromTextDetail = asyncHandler(
   async (req, res, next) => {
     const { foodDetails } = req.body;
-
+    console.log(foodDetails);
     if (!foodDetails) {
       throw new Error(404, "Food description not found");
     }
@@ -72,7 +74,7 @@ export const fetchNutritonFromTextDetail = asyncHandler(
     const jsonResponse = response.data;
 
     const nutritionInfo = jsonResponse.choices[0].message.content;
-
+    console.log(nutritionInfo);
     res
       .status(200)
       .json(
@@ -83,6 +85,7 @@ export const fetchNutritonFromTextDetail = asyncHandler(
 
 export const updateIngredients = asyncHandler(async (req, res, next) => {
   const { originalResponse, additionalIngredients } = req.body;
+  console.log(originalResponse, additionalIngredients);
 
   if (!originalResponse || !additionalIngredients) {
     throw new ApiError("Values is missing");
@@ -103,6 +106,7 @@ export const updateIngredients = asyncHandler(async (req, res, next) => {
   const jsonResponse = response.data;
 
   const nutritionInfo = jsonResponse.choices[0].message.content;
+  console.log(nutritionInfo);
   res
     .status(200)
     .json(
@@ -112,13 +116,18 @@ export const updateIngredients = asyncHandler(async (req, res, next) => {
 
 export const updateIngredientsAfterDeletion = asyncHandler(
   async (req, res, next) => {
-    const { updatedFoodItem } = req.body;
+    const { updatedFoodItem, originalFoodItem } = req.body;
+    console.log(updatedFoodItem);
 
-    if (!updatedFoodItem) {
-      throw new ApiError("Updated food item is missing");
+    if (!updatedFoodItem || !originalFoodItem) {
+      throw new ApiError("food item is missing");
     }
 
-    const params = updateIngredientAfterDeletion(model, updatedFoodItem);
+    const params = updateIngredientAfterDeletion(
+      model,
+      updatedFoodItem,
+      originalFoodItem
+    );
 
     const response = await axios.post(url, params, {
       headers: {
@@ -130,6 +139,7 @@ export const updateIngredientsAfterDeletion = asyncHandler(
     const jsonResponse = response.data;
 
     const nutritionInfo = jsonResponse.choices[0].message.content;
+    console.log(nutritionInfo);
     res
       .status(200)
       .json(

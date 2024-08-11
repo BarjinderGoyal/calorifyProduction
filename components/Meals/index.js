@@ -135,27 +135,36 @@ const Meals = ({ mealName }) => {
   }, [meals, exercise, meals, openedMealName]);
 
   const handleAddClick = async () => {
-    if (userDetail?.hasUsedFreeLogging) {
-      Superwall.shared.register("logMeal").then(() => {
-        if (mealName !== "exercise") {
-          updateSelectedMeal(mealName.toLowerCase());
-          updateBottomSheet(true);
-        } else {
-          navigation.navigate("searchScreen", {
-            previousScreen: "exercise",
-          });
-        }
-      });
+    // if (userDetail?.hasUsedFreeLogging) {
+    //   Superwall.shared.register("logMeal").then(() => {
+    //     if (mealName !== "exercise") {
+    //       updateSelectedMeal(mealName.toLowerCase());
+    //       updateBottomSheet(true);
+    //     } else {
+    //       navigation.navigate("searchScreen", {
+    //         previousScreen: "exercise",
+    //       });
+    //     }
+    //   });
+    // } else {
+    //   if (mealName !== "exercise") {
+    //     updateSelectedMeal(mealName.toLowerCase());
+    //     updateBottomSheet(true);
+    //     await updateUserFlags({ uid: userUid, hasUsedFreeLogging: true });
+    //   } else {
+    //     navigation.navigate("searchScreen", {
+    //       previousScreen: "exercise",
+    //     });
+    //   }
+    // }
+    if (mealName !== "exercise") {
+      updateSelectedMeal(mealName.toLowerCase());
+      updateBottomSheet(true);
+      await updateUserFlags({ uid: userUid, hasUsedFreeLogging: true });
     } else {
-      if (mealName !== "exercise") {
-        updateSelectedMeal(mealName.toLowerCase());
-        updateBottomSheet(true);
-        await updateUserFlags({ uid: userUid, hasUsedFreeLogging: true });
-      } else {
-        navigation.navigate("searchScreen", {
-          previousScreen: "exercise",
-        });
-      }
+      navigation.navigate("searchScreen", {
+        previousScreen: "exercise",
+      });
     }
   };
 

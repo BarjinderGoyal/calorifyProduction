@@ -43,6 +43,23 @@ export const registerUser = asyncHandler(async (req, res, next) => {
     throw new ApiError(400, "All fields are required");
   }
 
+  console.log(
+    uid,
+    userName,
+    email,
+    age,
+    gender,
+    height,
+    weight,
+    goal,
+    activityLevel,
+    weeklyGoal,
+    goalWeight,
+    dailyCalorieValue,
+    hasSeenFirstTimePaywall,
+    hasUsedFreeLogging
+  );
+
   const existedUser = await User.findOne({ $or: [{ uid }, { email }] });
 
   if (existedUser) {
@@ -95,7 +112,10 @@ export const getUser = asyncHandler(async (req, res, next) => {
     throw new ApiError(400, "User is required");
   }
 
+  console.log("uid is ", uid);
   const user = await User.findOne({ uid });
+
+  console.log("user is ", user);
 
   if (!user) {
     return res

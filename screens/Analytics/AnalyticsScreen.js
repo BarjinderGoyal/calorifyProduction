@@ -52,6 +52,7 @@ const AnalyticsScreen = () => {
   const navigation = useNavigation();
 
   const chartOptions = ["Week", "Month", "6 Months", "Year"];
+  console.log("analytics weekly", weeklyNutritionData);
 
   useEffect(() => {
     if (!userLoggedWeight.length && userUid) {
