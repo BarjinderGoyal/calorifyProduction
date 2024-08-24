@@ -4,12 +4,14 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import AppNavigationContainer from "./Navigation";
 import UserAuthContext from "./Context/UserAuthContext";
 import MealsContext from "./Context/MealsContext";
+// import { RCPurchaseController } from "./utils/SuperWall";
 
 import Superwall from "@superwall/react-native-superwall";
 import { SUPERWALL_ANDROID_API_KEY, SUPERWALL_IOS_API_KEY } from "@env";
 
 export default function App() {
   useEffect(() => {
+    // const MyPurchaseController = new RCPurchaseController();
     const apiKey =
       Platform.OS === "ios"
         ? `${SUPERWALL_IOS_API_KEY}`

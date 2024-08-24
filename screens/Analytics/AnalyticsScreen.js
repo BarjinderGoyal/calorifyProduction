@@ -54,6 +54,10 @@ const AnalyticsScreen = () => {
   const chartOptions = ["Week", "Month", "6 Months", "Year"];
   console.log("analytics weekly", weeklyNutritionData);
 
+  console.log(
+    "wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww",
+    userLoggedWeight
+  );
   useEffect(() => {
     if (!userLoggedWeight.length && userUid) {
       fetchUserLoggedWeight(userUid);
@@ -170,7 +174,7 @@ const AnalyticsScreen = () => {
               ))}
             </View>
           </View>
-          <View style={styles.weightChart}>
+          {/* <View style={styles.weightChart}>
             <Suspense
               fallback={
                 <View
@@ -180,7 +184,7 @@ const AnalyticsScreen = () => {
             >
               <WeightChart range={selected} data={userLoggedWeight} />
             </Suspense>
-          </View>
+          </View> */}
           <TouchableOpacity
             style={styles.addWeightContainer}
             onPress={() => navigation.navigate("WeightLogScreen")}

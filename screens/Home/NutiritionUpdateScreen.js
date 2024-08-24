@@ -9,21 +9,39 @@ import {
   KeyboardAvoidingView,
   Platform,
   ActivityIndicator,
+  Modal,
+  Dimensions,
+  Pressable,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Ionicons, Entypo } from "react-native-vector-icons";
+import {
+  Ionicons,
+  Entypo,
+  MaterialCommunityIcons,
+} from "react-native-vector-icons";
 import { useMealsContext } from "../../Context/MealsContext";
+
+const { width, height } = Dimensions.get("window");
 
 const NutritionUpdateScreen = ({ navigation, route }) => {
   const { data, index } = route.params;
   const { mealInfo, updateMealInfo, updateMealAfterIngredientDeletion } =
     useMealsContext();
-  const [values, setValues] = useState(data?.quantity[0]);
+  const [values, setValues] = useState({
+    servings: data?.quantity[0],
+    calories: data?.calories,
+    protein: data?.protein,
+    fat: data?.fat,
+    carbs: data?.carbs,
+  });
   const [localIngredients, setLocalIngredients] = useState(
     data?.ingredients || []
   );
   const [loading, setLoading] = useState(false);
   const isIngredientDeletedRef = useRef(false);
+  const [isModalVisible, setModalVisible] = useState(false);
+  const [currentTitle, setCurrentTitle] = useState("Calories");
+  const [currentValue, setCurrentValue] = useState("200");
 
   useEffect(() => {
     setLocalIngredients(mealInfo?.items[index]?.ingredients);
@@ -31,35 +49,38 @@ const NutritionUpdateScreen = ({ navigation, route }) => {
 
   const handleUpdate = useCallback(async () => {
     if (
-      Number(mealInfo?.items[index]?.quantity[0]) !== Number(values) &&
+      Number(mealInfo?.items[index]?.quantity[0]) !== Number(values.servings) &&
       !isIngredientDeletedRef.current
     ) {
       updateMealNutrition();
     } else if (
       isIngredientDeletedRef.current &&
-      Number(mealInfo?.items[index]?.quantity[0]) === Number(values)
+      Number(mealInfo?.items[index]?.quantity[0]) === Number(values.servings)
     ) {
       const updatedFoodItem = { ...data, ingredients: localIngredients };
       setLoading(true);
       await updateMealAfterIngredientDeletion(updatedFoodItem, data, index);
       setLoading(false);
-    } else {
+    } else if (
+      isIngredientDeletedRef.current &&
+      Number(mealInfo?.items[index]?.quantity[0]) !== Number(values.servings)
+    ) {
       const updatedFoodItem = { ...data, ingredients: localIngredients };
       setLoading(true);
       await updateMealAfterIngredientDeletion(
         updatedFoodItem,
         data,
         index,
-        values
+        values.servings
       );
       setLoading(false);
+    } else {
+      navigation.goBack();
     }
-
-    navigation.goBack();
   }, [
     mealInfo,
     navigation,
-    values,
+    values.servings,
     index,
     updateMealInfo,
     localIngredients,
@@ -68,21 +89,17 @@ const NutritionUpdateScreen = ({ navigation, route }) => {
 
   const updateMealNutrition = () => {
     const updatedCalorie =
-      (Number(mealInfo?.items[index]?.calories) /
-        Number(mealInfo?.items[index]?.quantity[0])) *
-      Number(values);
+      (Number(values.calories) / Number(mealInfo?.items[index]?.quantity[0])) *
+      Number(values.servings);
     const updatedProtein =
-      (Number(mealInfo?.items[index]?.protein) /
-        Number(mealInfo?.items[index].quantity[0])) *
-      Number(values);
+      (Number(values.protein) / Number(mealInfo?.items[index].quantity[0])) *
+      Number(values.servings);
     const updatedFat =
-      (Number(mealInfo?.items[index]?.fat) /
-        Number(mealInfo?.items[index].quantity[0])) *
-      Number(values);
+      (Number(values.fat) / Number(mealInfo?.items[index].quantity[0])) *
+      Number(values.servings);
     const updatedCarbs =
-      (Number(mealInfo?.items[index]?.carbs) /
-        Number(mealInfo?.items[index].quantity[0])) *
-      Number(values);
+      (Number(values.carbs) / Number(mealInfo?.items[index].quantity[0])) *
+      Number(values.servings);
 
     // Spread mealInfo to create a new object
     let updatedMealInfo = {
@@ -101,7 +118,7 @@ const NutritionUpdateScreen = ({ navigation, route }) => {
               protein: updatedProtein,
               fat: updatedFat,
               carbs: updatedCarbs,
-              quantity: [values, ...item.quantity.slice(1)],
+              quantity: [values.servings, ...item.quantity.slice(1)],
             }
           : item
       ),
@@ -141,6 +158,45 @@ const NutritionUpdateScreen = ({ navigation, route }) => {
     setLocalIngredients(updatedIngredients);
   };
 
+  const updateValue = (title, value) => {
+    setCurrentTitle(title);
+    setCurrentValue(value);
+    setModalVisible(true);
+  };
+
+  const saveValue = () => {
+    // Handle saving logic here
+    switch (currentTitle) {
+      case "Calories": {
+        setValues({ ...values, calories: currentValue });
+        break;
+      }
+
+      case "Fat": {
+        setValues({ ...values, fat: currentValue });
+        break;
+      }
+
+      case "Carbs": {
+        setValues({ ...values, carbs: currentValue });
+        break;
+      }
+
+      case "Protein": {
+        setValues({ ...values, protein: currentValue });
+        break;
+      }
+
+      case "Servings": {
+        setValues({ ...values, servings: currentValue });
+        break;
+      }
+    }
+    setCurrentTitle("");
+    setCurrentValue("");
+    setModalVisible(false);
+  };
+
   if (loading) {
     if (loading) {
       return (
@@ -172,7 +228,7 @@ const NutritionUpdateScreen = ({ navigation, route }) => {
             onPress={() => navigation.goBack()}
           />
         </View>
-        <View style={styles.inputContainer}>
+        {/* <View style={styles.inputContainer}>
           <Text style={styles.inputLabel}>Serving</Text>
           <TextInput
             style={styles.input}
@@ -180,9 +236,79 @@ const NutritionUpdateScreen = ({ navigation, route }) => {
             onChangeText={(text) => setValues(text)}
             keyboardType="numeric"
           />
+        </View> */}
+        <View style={styles.nutritionalContainer}>
+          <View style={styles.row}>
+            <View style={styles.infoCard}>
+              <Text style={styles.label}>Calories</Text>
+              <View style={styles.valueContainer}>
+                <Text style={styles.value}>{values.calories}</Text>
+                <MaterialCommunityIcons
+                  name="pencil"
+                  size={16}
+                  color="gray"
+                  onPress={() => updateValue("Calories", values.calories)}
+                />
+              </View>
+            </View>
+            <View style={styles.infoCard}>
+              <Text style={styles.label}>Carbs</Text>
+              <View style={styles.valueContainer}>
+                <Text style={styles.value}>{values.carbs}g</Text>
+                <MaterialCommunityIcons
+                  name="pencil"
+                  size={16}
+                  color="gray"
+                  onPress={() => updateValue("Carbs", values.carbs)}
+                />
+              </View>
+            </View>
+          </View>
+
+          <View style={styles.row}>
+            <View style={styles.infoCard}>
+              <Text style={styles.label}>Protein</Text>
+              <View style={styles.valueContainer}>
+                <Text style={styles.value}>{values.protein}g</Text>
+                <MaterialCommunityIcons
+                  name="pencil"
+                  size={16}
+                  color="gray"
+                  onPress={() => updateValue("Protein", values.protein)}
+                />
+              </View>
+            </View>
+            <View style={styles.infoCard}>
+              <Text style={styles.label}>Fat</Text>
+              <View style={styles.valueContainer}>
+                <Text style={styles.value}>{values.fat}g</Text>
+                <MaterialCommunityIcons
+                  name="pencil"
+                  size={16}
+                  color="gray"
+                  onPress={() => updateValue("Fat", values.fat)}
+                />
+              </View>
+            </View>
+          </View>
+
+          <View style={styles.servingContainer}>
+            <View style={styles.servingCard}>
+              <Text style={styles.label}>Serving</Text>
+              <View style={styles.valueContainer}>
+                <Text style={styles.value}>{values.servings} </Text>
+                <MaterialCommunityIcons
+                  name="pencil"
+                  size={16}
+                  color="gray"
+                  onPress={() => updateValue("Servings", values.servings)}
+                />
+              </View>
+            </View>
+          </View>
         </View>
         <View style={styles.ingredientsContainer}>
-          {localIngredients.length > 0 && (
+          {/* {localIngredients.length > 0 && (
             <>
               <Text style={styles.ingredientHeading}>Ingredients</Text>
               <FlatList
@@ -203,7 +329,30 @@ const NutritionUpdateScreen = ({ navigation, route }) => {
                 showsVerticalScrollIndicator={false}
               />
             </>
-          )}
+          )} */}
+          <View style={styles.ingredientsContainer}>
+            {localIngredients.length > 0 && (
+              <>
+                <Text style={styles.ingredientHeading}>Ingredients</Text>
+                <View style={styles.ingredientWrapper}>
+                  {localIngredients.map((item, index) => (
+                    <View
+                      key={`${item}-${index}`}
+                      style={styles.ingredientContainer}
+                    >
+                      <Text style={styles.ingredient}>{item}</Text>
+                      <Entypo
+                        name="cross"
+                        size={25}
+                        color="grey"
+                        onPress={() => handleIngredientDeletion(index)}
+                      />
+                    </View>
+                  ))}
+                </View>
+              </>
+            )}
+          </View>
         </View>
         <View style={styles.buttonContainer}>
           <TouchableOpacity
@@ -217,6 +366,40 @@ const NutritionUpdateScreen = ({ navigation, route }) => {
           </TouchableOpacity>
         </View>
       </KeyboardAvoidingView>
+      {isModalVisible && (
+        <Modal
+          isVisible={isModalVisible}
+          onBackdropPress={() => setModalVisible(false)}
+        >
+          <Pressable
+            onPress={() => setModalVisible(false)}
+            style={styles.modalContainer}
+          >
+            <View style={styles.modelContent}>
+              <View style={styles.modalHeader}>
+                <Text style={styles.modalTitle}>{currentTitle}</Text>
+                <TouchableOpacity onPress={() => setModalVisible(false)}>
+                  <MaterialCommunityIcons
+                    name="close"
+                    size={24}
+                    color="black"
+                  />
+                </TouchableOpacity>
+              </View>
+              <TextInput
+                style={styles.input}
+                placeholder={currentValue}
+                placeholderTextColor={"black"}
+                value={currentValue}
+                onChangeText={(text) => setCurrentValue(text)}
+              />
+              <TouchableOpacity style={styles.saveButton} onPress={saveValue}>
+                <Text style={styles.saveButtonText}>Save</Text>
+              </TouchableOpacity>
+            </View>
+          </Pressable>
+        </Modal>
+      )}
     </SafeAreaView>
   );
 };
@@ -260,18 +443,24 @@ const styles = StyleSheet.create({
     color: "black",
     marginBottom: 15,
   },
+  ingredientWrapper: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 10, // gap between rows
+  },
   ingredientContainer: {
     padding: 10,
-    borderRadius: 20,
+    borderRadius: 10,
     flexDirection: "row",
     alignItems: "center",
     gap: 5,
     borderWidth: 2,
     borderColor: "#FAEDCE",
     backgroundColor: "white",
+    marginBottom: 10,
+    marginRight: 10, // margin to space between items
   },
   ingredient: {
-    flex: 1,
     fontSize: 16,
     fontWeight: "normal",
     color: "black",
@@ -296,6 +485,115 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
     color: "black",
+  },
+  nutritionalContainer: {
+    padding: 16,
+    backgroundColor: "#f5f5f5",
+  },
+  row: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 16,
+  },
+  infoCard: {
+    width: "48%", // Two cards per row
+    backgroundColor: "#fff",
+    borderRadius: 8,
+    padding: 16,
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    elevation: 2,
+  },
+  label: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#333",
+    marginBottom: 8,
+  },
+  valueContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  value: {
+    fontSize: 24,
+    fontWeight: "bold",
+    color: "#000",
+  },
+  servingContainer: {
+    alignItems: "center",
+  },
+  servingCard: {
+    width: "50%", // Centered card with some width
+    backgroundColor: "#fff",
+    borderRadius: 8,
+    padding: 16,
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    elevation: 2,
+  },
+  modalContainer: {
+    // backgroundColor: "rgba(0,0,0,0.4)",
+    // padding: 16,
+    // borderRadius: 8,
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "transparent",
+  },
+  modelContent: {
+    width: width - 20,
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 20,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  modalHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 16,
+  },
+  modalTitle: {
+    fontSize: 25,
+    fontWeight: "bold",
+    // marginLeft: 16,
+    color: "black",
+  },
+  input: {
+    paddingVertical: 15,
+    paddingHorizontal: 10,
+    borderColor: "black",
+    borderWidth: 2,
+    borderRadius: 10,
+    paddingHorizontal: 10,
+    marginBottom: 16,
+    fontSize: 18,
+    color: "black",
+  },
+  saveButton: {
+    backgroundColor: "transparent",
+    paddingVertical: 15,
+    borderRadius: 8,
+    alignItems: "center",
+    borderRadius: 10,
+    borderWidth: 2,
+    borderColor: "black",
+    marginHorizontal: "10%",
+  },
+  saveButtonText: {
+    color: "black",
+    fontWeight: "bold",
+    fontSize: 18,
   },
 });
 
