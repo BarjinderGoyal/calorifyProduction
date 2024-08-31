@@ -273,8 +273,10 @@ const MealsContext = ({ children }) => {
           fats: formatDataForChart(response, "fats"),
           carbs: formatDataForChart(response, "carbs"),
         };
-
-        setWeeklyNutritionData(formattedData);
+        console.log("formatted data", formattedData)
+        const formattedData2 = 
+        {"calories": [{"label": "Sun", "value": "1600"}, {"label": "Mon", "value": "1549"}, {"label": "Tue", "value": "1790"}, {"label": "Wed", "value": "1500"}, {"label": "Thu", "value": "1680"}, {"label": "Fri", "value": "1589"}, {"label": "Sat", "value": "1640"}], "carbs": [{"label": "Sun", "value": 0}, {"label": "Mon", "value": 92}, {"label": "Tue", "value": 0}, {"label": "Wed", "value": 0}, {"label": "Thu", "value": 0}, {"label": "Fri", "value": 0}, {"label": "Sat", "value": 0}], "fats": [{"label": "Sun", "value": 0}, {"label": "Mon", "value": 16}, {"label": "Tue", "value": 0}, {"label": "Wed", "value": 0}, {"label": "Thu", "value": 0}, {"label": "Fri", "value": 0}, {"label": "Sat", "value": 0}], "protein": [{"label": "Sun", "value": 0}, {"label": "Mon", "value": 9}, {"label": "Tue", "value": 0}, {"label": "Wed", "value": 0}, {"label": "Thu", "value": 0}, {"label": "Fri", "value": 0}, {"label": "Sat", "value": 0}]}
+        setWeeklyNutritionData(formattedData2);
         return formattedData;
       }
     } catch (e) {
@@ -297,12 +299,12 @@ const MealsContext = ({ children }) => {
         });
       };
 
-      setWeeklyNutritionData({
-        calories: updateDayData(weeklyNutritionData.calories, "calorie"),
-        protein: updateDayData(weeklyNutritionData.protein, "protein"),
-        fats: updateDayData(weeklyNutritionData.fats, "fat"),
-        carbs: updateDayData(weeklyNutritionData.carbs, "carbs"),
-      });
+      // setWeeklyNutritionData({
+      //   calories: updateDayData(weeklyNutritionData.calories, "calorie"),
+      //   protein: updateDayData(weeklyNutritionData.protein, "protein"),
+      //   fats: updateDayData(weeklyNutritionData.fats, "fat"),
+      //   carbs: updateDayData(weeklyNutritionData.carbs, "carbs"),
+      // });
     },
     [calculatedNutrition, weeklyNutritionData]
   );
@@ -540,11 +542,12 @@ const MealsContext = ({ children }) => {
 
   const updateMealAfterIngredientDeletion = async (
     updatedMeal,
+    originalMeal,
     index,
     quantity = -1
   ) => {
     try {
-      const response = await updateIngredientAfterDeletion(updatedMeal);
+      const response = await updateIngredientAfterDeletion(updatedMeal, originalMeal);
 
       if (response?.data?.data) {
         const fetchedResponse = response.data.data;

@@ -8,9 +8,10 @@ import {
   Pressable,
   BackHandler,
   Alert,
+  StatusBar,
 } from "react-native";
 import React, { useEffect, useRef, useState } from "react";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import CircularProgressBar from "../../components/CircularProgressBar";
 
 import {
@@ -50,6 +51,7 @@ const HomeScreen = () => {
   const flatListRef = useRef(null);
   const [selectedDate, setSelectedDate] = useState(null);
   const navState = useNavigationState((state) => state);
+  const insets = useSafeAreaInsets();
 
   useEffect(() => {
     const todayIndex = dates.findIndex((date) => isToday(date));
@@ -62,6 +64,7 @@ const HomeScreen = () => {
   }, []);
 
   console.log("navigation index is ", navState.index);
+  console.log("height is ", StatusBar);
 
   useEffect(() => {
     const backAction = () => {
@@ -167,7 +170,7 @@ const HomeScreen = () => {
   return (
     <MealDropDownContext>
       <View style={styles.container}>
-        <SafeAreaView style={styles.innerContainer}>
+        <SafeAreaView style={[styles.innerContainer, {paddingBottom: -insets.bottom}]}>
           <View style={styles.header}>
             <Text style={styles.date}>{format(new Date(), "EEEE, d.MM")}</Text>
             {/* <Ionicons
@@ -369,11 +372,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#F6F5F2", //"#f7f8f9",
+    paddingTop: StatusBar.currentHeight,
   },
   innerContainer: {
     flex: 1,
     paddingHorizontal: 10,
-    paddingVertical: 10,
   },
   header: {
     marginBottom: 10,

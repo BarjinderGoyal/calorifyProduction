@@ -1,6 +1,6 @@
 import { StyleSheet, Text, TouchableOpacity, View, Image } from "react-native";
 import React, { useCallback, useState } from "react";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { useNavigation } from "@react-navigation/native";
 import { userAuthUseContext } from "../../Context/UserAuthContext";
@@ -11,6 +11,7 @@ const profileImage = require("../../assets/profile.jpeg");
 
 const AccountScreen = () => {
   const { userDetail } = userAuthUseContext();
+  const insets = useSafeAreaInsets();
   const [middleContainerOptions, setMiddleContainerOptions] = useState([
     { heading: "Age", value: `${userDetail?.age}` },
     { heading: "Gender", value: `${userDetail?.gender}` },
@@ -47,7 +48,7 @@ const AccountScreen = () => {
 
   return (
     <View style={styles.container}>
-      <SafeAreaView style={styles.innerContainer}>
+      <SafeAreaView style={[styles.innerContainer, {paddingBottom: -insets.bottom}]}>
         <View style={styles.topContainer}>
           <Image source={profileImage} style={styles.profileImage} />
           <Text style={styles.userName}>{userDetail?.userName}</Text>
@@ -78,7 +79,6 @@ const styles = StyleSheet.create({
   innerContainer: {
     flex: 1,
     paddingHorizontal: 10,
-    paddingVertical: 10,
     gap: 20,
   },
   middleContainer: {

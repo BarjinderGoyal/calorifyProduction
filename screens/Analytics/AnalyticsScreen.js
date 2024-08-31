@@ -7,7 +7,7 @@ import {
   View,
 } from "react-native";
 import React, { useState, useEffect, useMemo, lazy, Suspense } from "react";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { useNavigation } from "@react-navigation/native";
 import { useMealsContext } from "../../Context/MealsContext";
@@ -48,6 +48,8 @@ const AnalyticsScreen = () => {
     userDetail,
     userDailyMacroValue,
   } = userAuthUseContext();
+
+  const insets = useSafeAreaInsets();
   const [selected, setSelected] = useState("Week");
   const navigation = useNavigation();
 
@@ -136,7 +138,7 @@ const AnalyticsScreen = () => {
 
   return (
     <View style={styles.container}>
-      <SafeAreaView style={styles.innerContainer}>
+      <SafeAreaView style={[styles.innerContainer, {paddingBottom: -insets.bottom}]}>
         <ScrollView showsVerticalScrollIndicator={false}>
           <View style={styles.topContainer}>
             {[
@@ -159,7 +161,7 @@ const AnalyticsScreen = () => {
                     styles.chartOptionName,
                     {
                       backgroundColor:
-                        selected === option ? "#d05b19" : "white",
+                        selected === option ? "#DEAC80" : "white",
                     },
                   ]}
                   onPress={() => setSelected(option)}
@@ -203,7 +205,7 @@ const styles = StyleSheet.create({
   innerContainer: {
     flex: 1,
     paddingHorizontal: 10,
-    paddingVertical: 10,
+    paddingTop: -20,
   },
   topContainer: {
     flexDirection: "row",
@@ -214,7 +216,7 @@ const styles = StyleSheet.create({
     backgroundColor: "white", //"#d05b19",
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: "lightgrey",
-    marginHorizontal: 20,
+    // marginHorizontal: 20,
     marginTop: 15,
   },
   topInnerContainer: {
@@ -222,8 +224,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   value: {
-    fontSize: 22,
-    fontWeight: "600",
+    fontSize: 18,
+    fontWeight: "500",
     color: "black",
   },
   heading: {
@@ -238,12 +240,12 @@ const styles = StyleSheet.create({
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: "lightgrey",
     borderRadius: 10,
-    marginHorizontal: 20,
+    // marginHorizontal: 20,f
     justifyContent: "space-between",
   },
   weightChartContainer: {
     gap: 10,
-    marginVertical: 20,
+    marginVertical: 10,
   },
   weightChart: {
     backgroundColor: "white",
@@ -252,7 +254,7 @@ const styles = StyleSheet.create({
   },
   chartOptionName: {
     fontSize: 18,
-    fontWeight: "600",
+    fontWeight: "500",
     color: "black",
     borderRadius: 5,
     padding: 10,
@@ -268,7 +270,7 @@ const styles = StyleSheet.create({
   addWeightContainer: {
     padding: 15,
     borderRadius: 20,
-    backgroundColor: "#d05b19",
+    backgroundColor: "#DEAC80",
     alignItems: "center",
     justifyContent: "center",
     marginVertical: 15,

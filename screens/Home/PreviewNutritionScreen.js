@@ -341,7 +341,7 @@ const styles = StyleSheet.create({
   },
   headerContainer: {
     position: "absolute",
-    top: 40,
+    top: 60,
     left: 10,
     right: 10,
     flexDirection: "row",

@@ -114,14 +114,14 @@ export const updateIngredients = asyncHandler(async (req, res, next) => {
 
 export const updateIngredientsAfterDeletion = asyncHandler(
   async (req, res, next) => {
-    const { updatedFoodItem } = req.body;
+    const { updatedFoodItem, originalFoodItem } = req.body;
     console.log("updateIngredientsAfterDeletion input", updatedFoodItem)
 
-    if (!updatedFoodItem) {
-      throw new ApiError("Updated food item is missing");
+    if (!updatedFoodItem || !originalFoodItem) {
+      throw new ApiError("food item is missing");
     }
 
-    const params = updateIngredientAfterDeletion(model, updatedFoodItem);
+    const params = updateIngredientAfterDeletion(model, originalFoodItem, updatedFoodItem);
     const response = await axios.post(url, params, {
       headers: {
         "Content-Type": "application/json",

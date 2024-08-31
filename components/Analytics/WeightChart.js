@@ -70,11 +70,17 @@ const WeightChart = ({ range, data }) => {
           propsForDots: {
             r: "0", // Remove circles
           },
+          propsForBackgroundLines: {
+            strokeDasharray: '', // Remove dotted lines
+          },
         }}
         style={{
           marginVertical: 8,
           borderRadius: 16,
         }}
+        withDots={false} // Remove dots
+        withInnerLines={false} // Remove the grid lines inside the chart
+        withOuterLines={false} // Remove the outer grid lines
       />
     </View>
   );

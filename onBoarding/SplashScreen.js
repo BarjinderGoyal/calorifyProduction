@@ -13,12 +13,18 @@ const SplashScreen = () => {
   const { handleUserDetail, setUid } = userAuthUseContext();
 
   const checkUserLocally = async () => {
+  
     try {
-      console.log("CHECK USER LOCALLY IS CALLED inside)");
+      console.log(" CALLED insidefljdkfjdsoksdj)");
       const uidJson = await AsyncStorage.getItem("uid");
+      console.log("hello")
+      console.log("helloeeesndfkjkdsjkdsjdsj")
       const uidData = uidJson ? JSON.parse(uidJson) : null;
       if (uidData) {
+        console.log("uid", uidData);
+        console.log("no idea2fdsfdsfdsfdsfs");
         const response = await getUserFromDatabase(uidData);
+        console.log("fuck it");
         setUid(uidData);
         handleUserDetail(response?.data?.data);
         navigation.navigate("mainScreen");
@@ -26,7 +32,23 @@ const SplashScreen = () => {
         navigation.navigate("signupScreen");
       }
     } catch (e) {
-      console.error("Error reading UID from AsyncStorage:", e);
+      console.error("no jsjsdfhdddddddjksfdkh222222")
+      console.log("Error reading UID from AsyncStorage3333:", e.response);
+      if (e.response) {
+        // The request was made and the server responded with a status code
+        // that falls out of the range of 2xx
+        console.log("data", e.response.data);
+        console.log("status", e.response.status);
+        console.log("header", e.response.headers);
+      } else if (e.request) {
+        // The request was made but no response was received
+        // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+        // http.ClientRequest in node.js
+        console.log("request", e.request);
+      } else {
+        // Something happened in setting up the request that triggered an Error
+        console.log('Error', e.message);
+      }
     }
   };
 
