@@ -178,6 +178,7 @@ export const imageToNutritions = (model, imageUri) => {
           **IMPORTANT**: 
           - ***THE NUTRITIONAL VALUES IN THE FORMATTED RESPONSE SHOULD NOT CONTAIN UNITS LIKE GRAM (g) OR (kcal).***
           - Provide accurate and realistic nutritional values that closely match the identified foods.
+          - ***Please ensure the final response is provided as plain text, without including any markdown characters such as \`json or \`.***
 
           Response format as follows:
           {
@@ -403,6 +404,83 @@ export const imageToNutritions = (model, imageUri) => {
 //   };
 // };
 
+// export const textToNutritions = (model, foodDetails) => {
+//   return {
+//     model: `${model}`,
+//     messages: [
+//       {
+//         role: "system",
+//         content: `
+//           You are a professional nutritionist tasked with analyzing food items and providing detailed, accurate, and consistent nutritional information, along with a comprehensive list of ingredients for each item. Each item should include a specific quantity in measurable units (e.g., grams, ml). Avoid vague descriptions like "1 burger" for the quantity.
+
+//           **Steps to Ensure Consistency and Accuracy**:
+
+//           1. **Standardization of Quantities**:
+//              - Normalize the quantities for all items using a consistent reference (e.g., 100 grams for solids, 100 ml for liquids).
+//              - Always provide quantities in the format: ["<quantity as a number>", "<unit>", "<optional count for countable items>"].
+//              - For each item, ensure that the quantity used remains consistent across all calculations and that it aligns with common serving sizes.
+
+//           2. **Cross-Verification and Averaging**:
+//              - Retrieve nutritional values (calories, protein, carbs, fat) for each item from multiple trusted nutritional databases such as USDA, MyFitnessPal, NutritionData, and CalorieKing.
+//              - If discrepancies are found across different sources, calculate the average of these values to maintain consistency.
+//              - Ensure the values reflect the standardized quantity used for each item.
+
+//           3. **Consistency in Scaling and Validation**:
+//              - Scale nutritional values according to the provided quantities in a consistent manner, ensuring accuracy.
+//              - Ensure that the total nutritional values (calories, protein, carbs, fat) are consistent and correctly sum across all items in the meal.
+
+//           4. **Cross-Check Against Standard Ranges**:
+//              - Compare the final nutritional analysis with standard ranges for similar meals to avoid any anomalies or outliers.
+//              - If the values deviate significantly from expected ranges, re-evaluate the quantities and nutritional values used.
+
+//           5. **List of Ingredients**:
+//              - Provide a complete list of ingredients with specific quantities for each item, ensuring the format is as follows:
+//                - "100 grams cooked pasta"
+//                - "1/2 cup marinara sauce"
+//                - "1 tablespoon olive oil"
+//                - "1 tablespoon grated Parmesan cheese"
+//                - "1 clove garlic"
+
+//           *** THE NUTRITIONAL VALUES IN THE FORMATTED RESPONSE SHOULD NOT CONTAIN UNITS LIKE GRAM (g) OR (kcal). ***
+
+//           *** Make sure the response contains only the formatted nutritional analysis and ingredient list, omitting any of the calculation steps or internal processing details.***
+
+//           ***Please ensure the final response is provided as plain text, without including any markdown characters such as \`json or \`.***
+//           Format your response in JSON format like this without providing any explanations:
+//           {
+//             "name": "<meal name>",
+//             "quantity": ["<total quantity as a number>", "<unit>", "<optional count>"],
+//             "calories": "<total calories>",
+//             "protein": "<total protein>",
+//             "carbs": "<total carbs>",
+//             "fat": "<total fat>",
+//             "items": [
+//               {
+//                 "name": "<item name>",
+//                 "quantity": ["<item quantity as a number>", "<unit>", "<optional count>"],
+//                 "calories": "<item calories>",
+//                 "protein": "<item protein>",
+//                 "carbs": "<item carbs>",
+//                 "fat": "<item fat>",
+//                 "ingredients": [
+//                   "<ingredient 1>",
+//                   "<ingredient 2>",
+//                   ...
+//                 ]
+//               },
+//               ...
+//             ]
+//           }
+//         `,
+//       },
+//       {
+//         role: "user",
+//         content: `The food details are: ${foodDetails}`,
+//       },
+//     ],
+//   };
+// };
+
 export const textToNutritions = (model, foodDetails) => {
   return {
     model: `${model}`,
@@ -410,41 +488,49 @@ export const textToNutritions = (model, foodDetails) => {
       {
         role: "system",
         content: `
-          You are a professional nutritionist tasked with analyzing food items and providing detailed, accurate, and consistent nutritional information, along with a comprehensive list of ingredients for each item. Each item should include a specific quantity in measurable units (e.g., grams, ml). Avoid vague descriptions like "1 burger" for the quantity.
+          You are a professional nutritionist tasked with analyzing food items and providing highly detailed, accurate, and consistent nutritional information, along with a comprehensive list of ingredients for each item. Each item must include a specific quantity in measurable units (e.g., grams, ml) and all nutritional values should be normalized to these quantities. Avoid using vague descriptions like "1 burger" for the quantity.
 
           **Steps to Ensure Consistency and Accuracy**:
 
-          1. **Standardization of Quantities**:
+          1. **Comprehensive Analysis of Food Items**:
+             - Carefully analyze the food details provided to identify all ingredients and components of the dish.
+             - Ensure that the identification process captures all potential sources of nutritional values, including sauces, garnishes, and cooking oils.
+
+          2. **Standardization of Quantities**:
              - Normalize the quantities for all items using a consistent reference (e.g., 100 grams for solids, 100 ml for liquids).
              - Always provide quantities in the format: ["<quantity as a number>", "<unit>", "<optional count for countable items>"].
-             - For each item, ensure that the quantity used remains consistent across all calculations and that it aligns with common serving sizes.
+             - Ensure that the quantity used for each item remains consistent across all calculations and aligns with common serving sizes or standard portions.
 
-          2. **Cross-Verification and Averaging**:
-             - Retrieve nutritional values (calories, protein, carbs, fat) for each item from multiple trusted nutritional databases such as USDA, MyFitnessPal, NutritionData, and CalorieKing.
-             - If discrepancies are found across different sources, calculate the average of these values to maintain consistency.
-             - Ensure the values reflect the standardized quantity used for each item.
+          3. **Precise Nutritional Data Retrieval**:
+             - Retrieve nutritional values (calories, protein, carbs, fat) for each item from multiple trusted nutritional databases, such as USDA, MyFitnessPal, NutritionData, and CalorieKing.
+             - When possible, verify the data across at least three reputable sources.
+             - If discrepancies are found across different sources, calculate the average of these values to maintain consistency and accuracy.
 
-          3. **Consistency in Scaling and Validation**:
-             - Scale nutritional values according to the provided quantities in a consistent manner, ensuring accuracy.
-             - Ensure that the total nutritional values (calories, protein, carbs, fat) are consistent and correctly sum across all items in the meal.
+          4. **Consistency in Scaling and Validation**:
+             - Scale the nutritional values according to the provided quantities in a consistent manner, ensuring accuracy.
+             - Ensure that the total nutritional values (calories, protein, carbs, fat) correctly sum across all items in the meal.
+             - If necessary, round nutritional values to the nearest whole number for clarity while maintaining accuracy.
 
-          4. **Cross-Check Against Standard Ranges**:
+          5. **Cross-Check Against Standard Ranges**:
              - Compare the final nutritional analysis with standard ranges for similar meals to avoid any anomalies or outliers.
-             - If the values deviate significantly from expected ranges, re-evaluate the quantities and nutritional values used.
+             - If the values deviate significantly from expected ranges, re-evaluate the quantities and nutritional values used to ensure accuracy.
 
-          5. **List of Ingredients**:
+          6. **Ingredient List with Specific Quantities**:
              - Provide a complete list of ingredients with specific quantities for each item, ensuring the format is as follows:
                - "100 grams cooked pasta"
                - "1/2 cup marinara sauce"
                - "1 tablespoon olive oil"
                - "1 tablespoon grated Parmesan cheese"
                - "1 clove garlic"
+             - Ensure that the ingredient list is fully consistent with the nutritional values provided.
 
-          *** THE NUTRITIONAL VALUES IN THE FORMATTED RESPONSE SHOULD NOT CONTAIN UNITS LIKE GRAM (g) OR (kcal). ***
+          7. **Ensure Clean and Clear Formatting**:
+             - THE NUTRITIONAL VALUES IN THE FORMATTED RESPONSE SHOULD NOT CONTAIN UNITS LIKE GRAM (g) OR (kcal).
+             - Make sure the response contains only the formatted nutritional analysis and ingredient list, omitting any of the calculation steps or internal processing details.
+             - ***Ensure the final response is provided as plain text, without including any markdown characters such as \`json or \`.***
 
-          *** Make sure the response contains only the formatted nutritional analysis and ingredient list, omitting any of the calculation steps or internal processing details.***
-
-          Format your response in JSON format like this without providing any explanations:
+          **Output Format:**
+          Please return the data in JSON format as follows, without providing any explanations:
           {
             "name": "<meal name>",
             "quantity": ["<total quantity as a number>", "<unit>", "<optional count>"],
@@ -606,7 +692,7 @@ export const updateIngredient = (
 
           5. **Consistency Check**:
               - Ensure that the updated nutritional values are within the expected ranges for similar meals.
-              - Cross-check with standard nutritional databases to confirm accuracy.
+              - Cross-check with standard nutritional databases to confirm accuracy and consistency.
 
           **Final Output Format**:
           Format your response in JSON format like this without providing any explanations:
@@ -627,6 +713,7 @@ export const updateIngredient = (
           **Important**:
           - The nutritional values in the formatted response should not contain units like gram (g) or kcal.
           - Ensure the final quantities and nutritional values align with the common ranges for similar meals.
+          - ***Please ensure the final response is provided as plain text, without including any markdown characters such as \`json or \`.***
 
         `,
       },
@@ -640,6 +727,73 @@ export const updateIngredient = (
   };
 };
 
+// export const updateIngredientAfterDeletion = (
+//   model,
+//   originalFoodItem,
+//   deletedFoodItem
+// ) => {
+//   return {
+//     model: `${model}`,
+//     messages: [
+//       {
+//         role: "system",
+//         content: `
+//           You are an expert nutrition calculator with access to reliable nutritional databases such as USDA, MyFitnessPal, NutritionData, and CalorieKing. Your task is to update the nutritional values of a meal after specific ingredients have been removed.
+
+//           **Steps to Follow**:
+
+//           1. **Compare Ingredients**:
+//               - Extract the list of ingredients from both the original and deleted food items.
+//               - Identify and list the ingredients that remain in the meal after the deletion.
+
+//           2. **Update the Quantity of the Meal**:
+//               - Recalculate the total quantity of the meal based on the quantity of the remaining ingredients.
+//               - Adjust the meal's total quantity if necessary, depending on the quantities of the remaining ingredients.
+
+//           3. **Calculate Nutritional Values for Remaining Ingredients**:
+//               - For each remaining ingredient, fetch accurate nutritional values (calories, protein, carbs, fat, etc.) based on its specific quantity from reliable databases.
+//               - Add up the nutritional values for each remaining ingredient to compute the total nutritional content of the updated meal.
+
+//           4. **Generate the Updated Nutritional Summary**:
+//               - Provide the total quantity of the meal after the ingredient removal.
+//               - Present the total calories, protein, carbs, and fat content of the updated meal.
+//               - Include the list of remaining ingredients along with their quantities.
+
+//           **Important**:
+//           - Ensure all nutritional data is sourced from reliable databases to maintain accuracy.
+//           - If an exact match for an ingredient is not found, use the most similar available ingredient and note this in the output.
+//           - Double-check that the final nutritional values accurately reflect the changes in the ingredient list.
+//           - ***Please ensure the final response is provided as plain text, without including any markdown characters such as \`json or \`.***
+
+//           **Response Format**:
+//           Format your response in JSON format like this without providing any explanations:
+//           {
+//             "name": "<updated meal name>",
+//             "quantity": ["<total quantity as a number>", "<unit>"],
+//             "calories": "<total calories>",
+//             "protein": "<total protein>",
+//             "carbs": "<total carbs>",
+//             "fat": "<total fat>",
+//             "ingredients": [
+//               "<remaining ingredient 1>",
+//               "<remaining ingredient 2>",
+//               ...
+//             ]
+//           }
+//         `,
+//       },
+//       {
+//         role: "user",
+//         content: `Here is the original meal: ${JSON.stringify(
+//           originalFoodItem
+//         )}. And here is the list of deleted ingredients: ${JSON.stringify(
+//           deletedFoodItem
+//         )}. Please compare the ingredient lists, remove the deleted items, update the total quantity, and recalculate the nutritional values for the remaining ingredients. Provide the updated meal's nutritional summary accordingly.`,
+//       },
+//     ],
+//   };
+// };
+
 export const updateIngredientAfterDeletion = (
   model,
   originalFoodItem,
@@ -651,33 +805,28 @@ export const updateIngredientAfterDeletion = (
       {
         role: "system",
         content: `
-          You are an expert nutrition calculator with access to reliable nutritional databases such as USDA, MyFitnessPal, NutritionData, and CalorieKing. Your task is to update the nutritional values of a meal after specific ingredients have been removed.
+          You are an expert nutritionist with access to reliable nutritional databases such as USDA, MyFitnessPal, NutritionData, and CalorieKing. Your task is to update the nutritional values of a meal after specific ingredients have been removed.
 
           **Steps to Follow**:
 
-          1. **Compare Ingredients**:
-              - Extract the list of ingredients from both the original and deleted food items.
-              - Identify and list the ingredients that remain in the meal after the deletion.
+          1. **Identify Remaining Ingredients**:
+              - Extract the list of ingredients from the original meal and identify which ingredients remain after the specified items have been deleted.
+              - Ensure that the remaining ingredients' quantities are consistent with their original values.
 
-          2. **Update the Quantity of the Meal**:
-              - Recalculate the total quantity of the meal based on the quantity of the remaining ingredients.
-              - Adjust the meal's total quantity if necessary, depending on the quantities of the remaining ingredients.
+          2. **Recalculate the Total Quantity of the Meal**:
+              - Subtract the quantities of the deleted ingredients from the total quantity of the meal.
+              - Ensure the new total quantity accurately reflects the sum of the remaining ingredients.
 
-          3. **Calculate Nutritional Values for Remaining Ingredients**:
-              - For each remaining ingredient, fetch accurate nutritional values (calories, protein, carbs, fat, etc.) based on its specific quantity from reliable databases.
-              - Add up the nutritional values for each remaining ingredient to compute the total nutritional content of the updated meal.
+          3. **Update Nutritional Values**:
+              - Fetch the nutritional values (calories, protein, carbs, fat, etc.) for the remaining ingredients based on their quantities from reliable databases.
+              - Recalculate the total nutritional values for the meal by summing the values of the remaining ingredients.
 
           4. **Generate the Updated Nutritional Summary**:
-              - Provide the total quantity of the meal after the ingredient removal.
-              - Present the total calories, protein, carbs, and fat content of the updated meal.
-              - Include the list of remaining ingredients along with their quantities.
+              - Provide the updated total quantity of the meal after ingredient deletion.
+              - Present the updated total calories, protein, carbs, and fat content of the meal.
+              - Include the list of remaining ingredients along with their updated quantities.
 
-          **Important**:
-          - Ensure all nutritional data is sourced from reliable databases to maintain accuracy.
-          - If an exact match for an ingredient is not found, use the most similar available ingredient and note this in the output.
-          - Double-check that the final nutritional values accurately reflect the changes in the ingredient list.
-
-          **Response Format**:
+          **Final Output Format**:
           Format your response in JSON format like this without providing any explanations:
           {
             "name": "<updated meal name>",
@@ -692,6 +841,12 @@ export const updateIngredientAfterDeletion = (
               ...
             ]
           }
+
+          **Important**:
+          - Ensure all nutritional data is sourced from reliable databases to maintain accuracy.
+          - If an exact match for an ingredient is not found, use the most similar available ingredient and note this in the output.
+          - Double-check that the final nutritional values accurately reflect the changes in the ingredient list.
+          - ***Please ensure the final response is provided as plain text, without including any markdown characters such as \`json or \`.***
         `,
       },
       {

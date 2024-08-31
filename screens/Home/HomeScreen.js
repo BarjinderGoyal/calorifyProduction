@@ -43,6 +43,7 @@ const HomeScreen = () => {
     useMealsContext();
   const { bottomSheetIsOpen } = bottomSheetUseContext();
   const { userDetail, userDailyMacroValue } = userAuthUseContext();
+  console.log(userDetail);
   const navigation = useNavigation();
   const start = startOfMonth(new Date());
   const end = endOfMonth(new Date());

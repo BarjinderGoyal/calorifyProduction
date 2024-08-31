@@ -1,6 +1,7 @@
 import axios from "axios";
 
 import { BASE_ENDPOINT_URL } from "../Constants";
+import { calculateDailyCalorieIntake } from "./CalculateDailyCalorieIntake";
 
 export const createAccount = async (
   uid,
@@ -33,7 +34,7 @@ export const createAccount = async (
     }
     console.log("trying to create an account");
 
-    const dailyCalorieValue = calculateDailyCaloricIntake(
+    const dailyCalorieValue = calculateDailyCalorieIntake(
       Number(weight),
       Number(weeklyGoal),
       gender,
@@ -71,53 +72,53 @@ export const createAccount = async (
   }
 };
 
-const calculateDailyCaloricIntake = (
-  weight,
-  weeklyGoal,
-  gender,
-  age,
-  height,
-  activityLevel,
-  goal
-) => {
-  // Calculate BMR
-  const bmr = calculateBMR(weight, height, age, gender);
+// const calculateDailyCaloricIntake = (
+//   weight,
+//   weeklyGoal,
+//   gender,
+//   age,
+//   height,
+//   activityLevel,
+//   goal
+// ) => {
+//   // Calculate BMR
+//   const bmr = calculateBMR(weight, height, age, gender);
 
-  // Calculate TDEE
-  const tdee = calculateTDEE(bmr, activityLevel);
+//   // Calculate TDEE
+//   const tdee = calculateTDEE(bmr, activityLevel);
 
-  // Adjust for weight goals
-  const dailyCaloricIntake = adjustForWeightGoal(tdee, weeklyGoal, goal);
+//   // Adjust for weight goals
+//   const dailyCaloricIntake = adjustForWeightGoal(tdee, weeklyGoal, goal);
 
-  return dailyCaloricIntake;
-};
+//   return dailyCaloricIntake;
+// };
 
-const calculateBMR = (weight, height, age, gender) => {
-  if (gender === "male") {
-    return 10 * weight + 6.25 * height - 5 * age + 5;
-  } else {
-    return 10 * weight + 6.25 * height - 5 * age - 161;
-  }
-};
+// const calculateBMR = (weight, height, age, gender) => {
+//   if (gender === "male") {
+//     return 10 * weight + 6.25 * height - 5 * age + 5;
+//   } else {
+//     return 10 * weight + 6.25 * height - 5 * age - 161;
+//   }
+// };
 
-const calculateTDEE = (bmr, activityLevel) => {
-  return bmr * activityLevel;
-};
+// const calculateTDEE = (bmr, activityLevel) => {
+//   return bmr * activityLevel;
+// };
 
-const adjustForWeightGoal = (tdee, weeklyGoal, goal) => {
-  // 1 kg of fat is roughly 7700 calories
-  const caloricAdjustment = (weeklyGoal * 7700) / 7;
+// const adjustForWeightGoal = (tdee, weeklyGoal, goal) => {
+//   // 1 kg of fat is roughly 7700 calories
+//   const caloricAdjustment = (weeklyGoal * 7700) / 7;
 
-  if (goal === "Maintain weight") {
-    return tdee;
-  } else if (goal === "Loose weight") {
-    return tdee - caloricAdjustment;
-  } else if (goal === "Gain weight") {
-    return tdee + caloricAdjustment;
-  } else {
-    throw new Error('Invalid goal. Choose "maintain", "Loose", or "Gain".');
-  }
-};
+//   if (goal === "Maintain weight") {
+//     return tdee;
+//   } else if (goal === "Loose weight") {
+//     return tdee - caloricAdjustment;
+//   } else if (goal === "Gain weight") {
+//     return tdee + caloricAdjustment;
+//   } else {
+//     throw new Error('Invalid goal. Choose "maintain", "Loose", or "Gain".');
+//   }
+// };
 
 function calculateDailyIntake(
   age,

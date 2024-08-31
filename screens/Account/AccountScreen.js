@@ -180,26 +180,34 @@ const profileImage = require("../../assets/profile.jpeg");
 
 const AccountScreen = () => {
   const { userDetail } = userAuthUseContext();
-  const topContainerOptions = [
+  const userDetails = [
     { heading: "Name", value: `${userDetail?.userName}` },
-    { heading: "Age", value: `${userDetail?.age}` },
-    { heading: "Gender", value: `${userDetail?.gender}` },
-    { heading: "Height", value: `${userDetail?.height} cm` },
-    { heading: "Goal", value: `${userDetail?.goal} ` },
-    { heading: "Goal Weight", value: `${userDetail?.goalWeight} kg` },
-    {
-      heading: "Calorie Goal",
-      value: `${userDetail?.dailyCalorieValue.toFixed(0)} Kcal`,
-    },
     { heading: "Email", value: `${userDetail?.email}` },
+    { heading: "Gender", value: `${userDetail?.gender}` },
+  ];
+
+  const userOptions = [
+    // { heading: "Goal", value: `${userDetail?.goal} ` },
+    { heading: "Target Weight", value: `${userDetail?.goalWeight} kg` },
+    { heading: "Height", value: `${userDetail?.height} cm` },
+    { heading: "Age", value: `${userDetail?.age}` },
+    {
+      heading: "Calories",
+      value: `${userDetail?.dailyCalorieValue?.toFixed(0)} Kcal`,
+    },
+    // {
+    //   heading: "Protein, Carb, Fat %",
+    //   value: `Default`,
+    // },
   ];
 
   const subscriptionOptions = [
-    { title: "Restore Purchases", url: null },
-    { title: "Upgrade to plus", url: null },
+    // { title: "Restore Purchases", url: null },
+    // { title: "Upgrade to plus", url: null },
   ];
 
   const policiesLink = [
+    { title: "Upgrade to plus", url: null },
     { title: "Contact us", url: null },
     {
       title: "Terms & conditions",
@@ -325,12 +333,60 @@ const AccountScreen = () => {
     }
   };
 
+  const handleUpdateScreen = useCallback((title) => {
+    switch (title) {
+      case "Target Weight": {
+        navigation.navigate("weightUpdateScreen");
+        break;
+      }
+
+      case "Height": {
+        navigation.navigate("heightUpdateScreen");
+        break;
+      }
+
+      case "Age": {
+        navigation.navigate("ageUpdateScreen");
+        break;
+      }
+
+      case "Calories": {
+        navigation.navigate("caloriesUpdateScreen");
+        break;
+      }
+
+      case "Protein, Carb, Fat %": {
+        navigation.navigate("macroUpdateScreen");
+        break;
+      }
+    }
+  }, []);
+
   const RenderOptions = useCallback(({ item, index }) => {
     return (
       <View style={styles.renderItemContainer}>
         <View style={styles.renderItemInnerContainer}>
           <Text style={styles.itemOptionName}>{item.heading}</Text>
           <Text style={styles.itemOptionValue}>{item.value}</Text>
+        </View>
+      </View>
+    );
+  });
+
+  const RenderUserOptions = useCallback(({ item, index }) => {
+    return (
+      <View style={styles.renderItemContainer}>
+        <View style={styles.renderItemInnerContainer}>
+          <Text style={styles.itemOptionName}>{item.heading}</Text>
+          <View style={styles.valueContainer}>
+            <Text style={styles.itemOptionValue}>{item.value}</Text>
+            <MaterialIcons
+              name="chevron-right"
+              size={30}
+              color="lightgrey"
+              onPress={() => handleUpdateScreen(item.heading)}
+            />
+          </View>
         </View>
       </View>
     );
@@ -359,17 +415,25 @@ const AccountScreen = () => {
         <SafeAreaView style={styles.innerContainer}>
           <View style={styles.optionsContainer}>
             {/* <Image source={profileImage} style={styles.profileImage} /> */}
-            {topContainerOptions.map((item, index) => {
+            {userDetails.map((item, index) => {
               return <RenderOptions item={item} index={index} key={index} />;
             })}
           </View>
           <View style={styles.optionsContainer}>
+            {/* <Image source={profileImage} style={styles.profileImage} /> */}
+            {userOptions.map((item, index) => {
+              return (
+                <RenderUserOptions item={item} index={index} key={index} />
+              );
+            })}
+          </View>
+          {/* <View style={styles.optionsContainer}>
             {subscriptionOptions.map((item, index) => {
               return (
                 <RenderOtherOptions item={item} index={index} key={index} />
               );
             })}
-          </View>
+          </View> */}
           <View style={styles.optionsContainer}>
             {policiesLink.map((item, index) => {
               return (
@@ -437,6 +501,11 @@ const styles = StyleSheet.create({
   itemOptionValue: {
     fontSize: 16,
     color: "black",
+  },
+  valueContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 15,
   },
   middleContainer: {
     paddingHorizontal: 10,

@@ -12,6 +12,7 @@ import {
   Modal,
   Dimensions,
   Pressable,
+  ScrollView,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import {
@@ -40,8 +41,8 @@ const NutritionUpdateScreen = ({ navigation, route }) => {
   const [loading, setLoading] = useState(false);
   const isIngredientDeletedRef = useRef(false);
   const [isModalVisible, setModalVisible] = useState(false);
-  const [currentTitle, setCurrentTitle] = useState("Calories");
-  const [currentValue, setCurrentValue] = useState("200");
+  const [currentTitle, setCurrentTitle] = useState("");
+  const [currentValue, setCurrentValue] = useState("");
 
   useEffect(() => {
     setLocalIngredients(mealInfo?.items[index]?.ingredients);
@@ -74,13 +75,19 @@ const NutritionUpdateScreen = ({ navigation, route }) => {
         values.servings
       );
       setLoading(false);
-    } else {
-      navigation.goBack();
+    } else if (
+      Number(mealInfo?.items[index]?.calories) !== Number(values.calories) ||
+      Number(mealInfo?.items[index]?.fat) !== Number(values.fat) ||
+      Number(mealInfo?.items[index]?.carbs) !== Number(values.carbs) ||
+      Number(mealInfo?.items[index]?.protein) !== Number(values.protein)
+    ) {
+      updateMealNutrition();
     }
+    navigation.goBack();
   }, [
     mealInfo,
     navigation,
-    values.servings,
+    values,
     index,
     updateMealInfo,
     localIngredients,
@@ -334,7 +341,10 @@ const NutritionUpdateScreen = ({ navigation, route }) => {
             {localIngredients.length > 0 && (
               <>
                 <Text style={styles.ingredientHeading}>Ingredients</Text>
-                <View style={styles.ingredientWrapper}>
+                <ScrollView
+                  showsVerticalScrollIndicator={false}
+                  style={styles.ingredientWrapper}
+                >
                   {localIngredients.map((item, index) => (
                     <View
                       key={`${item}-${index}`}
@@ -349,7 +359,7 @@ const NutritionUpdateScreen = ({ navigation, route }) => {
                       />
                     </View>
                   ))}
-                </View>
+                </ScrollView>
               </>
             )}
           </View>
@@ -369,6 +379,7 @@ const NutritionUpdateScreen = ({ navigation, route }) => {
       {isModalVisible && (
         <Modal
           isVisible={isModalVisible}
+          transparent={true}
           onBackdropPress={() => setModalVisible(false)}
         >
           <Pressable
@@ -541,7 +552,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "transparent",
+    backgroundColor: "rgba(0,0,0,0.4)",
   },
   modelContent: {
     width: width - 20,

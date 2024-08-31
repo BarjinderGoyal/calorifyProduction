@@ -159,3 +159,93 @@ export const updateUserFlags = asyncHandler(async (req, res, next) => {
     .status(200)
     .json(new ApiResponse(200, updatedUser, "User flags updated successfully"));
 });
+
+export const updateUserGoalWeight = asyncHandler(async (req, res, next) => {
+  const { uid, weight } = req.body;
+
+  if (!uid) {
+    throw new ApiError(400, "User ID is required");
+  }
+
+  const user = await User.findOne({ uid });
+
+  if (!user) {
+    throw new ApiError(404, "User not found");
+  }
+
+  user.goalWeight = Number(weight);
+
+  await user.save();
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, user, "User flags updated successfully"));
+});
+
+export const updateUserHeight = asyncHandler(async (req, res, next) => {
+  const { uid, height, calories } = req.body;
+
+  if (!uid) {
+    throw new ApiError(400, "User ID is required");
+  }
+
+  const user = await User.findOne({ uid });
+
+  if (!user) {
+    throw new ApiError(404, "User not found");
+  }
+
+  user.height = Number(height);
+  user.dailyCalorieValue = Number(calories);
+
+  await user.save();
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, user, "User flags updated successfully"));
+});
+
+export const updateUserAge = asyncHandler(async (req, res, next) => {
+  const { uid, age, calories } = req.body;
+
+  if (!uid) {
+    throw new ApiError(400, "User ID is required");
+  }
+
+  const user = await User.findOne({ uid });
+
+  if (!user) {
+    throw new ApiError(404, "User not found");
+  }
+
+  user.age = Number(age);
+  user.dailyCalorieValue = Number(calories);
+
+  await user.save();
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, user, "User flags updated successfully"));
+});
+
+export const updateUserCalories = asyncHandler(async (req, res, next) => {
+  const { uid, calories } = req.body;
+
+  if (!uid) {
+    throw new ApiError(400, "User ID is required");
+  }
+
+  const user = await User.findOne({ uid });
+
+  if (!user) {
+    throw new ApiError(404, "User not found");
+  }
+
+  user.dailyCalorieValue = Number(calories);
+
+  await user.save();
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, user, "User flags updated successfully"));
+});
